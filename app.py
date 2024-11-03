@@ -26,22 +26,26 @@ def index():
 # You will probably not need the routes below, but they are here
 # just in case. Please delete them if you are not using them
 
-@app.route('/greet/', methods=["GET", "POST"])
-def greet():
-    if request.method == 'GET':
-        return render_template('greet.html',
-                               page_title='Form to collect username')
-    else:
-        try:
-            username = request.form['username'] # throws error if there's trouble
-            flash('form submission successful')
-            return render_template('greet.html',
-                                   page_title='Welcome '+username,
-                                   name=username)
+@app.route('/upload_route/', methods=["GET", "POST"])
+def upload_route():
+        return render_template('routeForm.html')
+@app.route('/search_route/', methods=["GET", "POST"])
+def search_route():
+        return render_template('routeSearch.html')
+@app.route('/profile/', methods=["GET", "POST"])
+def profile():
+        return render_template('profile.html')
+@app.route('/profileFeed/', methods=["GET", "POST"])
+def profileFeed():
+        return render_template('profileFeed.html')
+@app.route('/aboutUs/', methods=["GET", "POST"])
+def aboutUs():
+        return render_template('aboutUs.html')
+@app.route('/ranRoute/', methods=["GET", "POST"])
+def ranRoute():
+        return render_template('ranRoute.html')
 
-        except Exception as err:
-            flash('form submission error'+str(err))
-            return redirect( url_for('index') )
+    
 
 # This route displays all the data from the submitted form onto the rendered page
 # It's unlikely you will ever need anything like this in your own applications, so

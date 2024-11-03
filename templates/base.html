@@ -24,9 +24,14 @@
 {% block nav %}
 <nav>
   <ul>
-    <li><a href="{{url_for('index')}}">home</a></li>
-    <li><a href="{{url_for('greet')}}">greet</a></li>
-    <li><a href="{{url_for('testform')}}">testform</a></li>
+    <li><a href="{{url_for('index')}}">Home Page</a></li>
+    <li><a href="{{url_for('profileFeed')}}">Profile Feed</a></li>
+   
+    <li><a href="{{url_for('profile')}}">My Profile</a></li>
+    <li><a href="{{url_for('upload_route')}}">Upload A Route</a></li>
+    <li><a href="{{url_for('search_route')}}">Search For A Route</a></li>
+    <li><a href="{{url_for('ranRoute')}}">I ran a route!</a></li>
+    <li><a href="{{url_for('aboutUs')}}">About the Creators</a></li>
   </ul>
 </nav>
 {% endblock %}
