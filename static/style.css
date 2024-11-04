@@ -2,10 +2,10 @@
 */
 
 HTML {
-    --color-header: #007ea9;  /* color for H1-H6 and others. was deepskyblue but poor contrast. */
+    --color-header: #ccddd3;  /* color for H1-H6 and others. was deepskyblue but poor contrast. */
     --color-hilite: #b50000;  /* was red, but this avoids WAVE contrast errors */ 
-    --color-focus: #56B929;
-    --font-family: Verdana;
+    --color-focus: #92ab9c;
+    --font-family: "Varela Round", sans-serif;
     font-family: var(--font-family)
 }
 
@@ -36,24 +36,25 @@ nav > ul {
 nav ul {
     list-style-type: none;
     margin: 0px;
-    padding: 0px;
+    padding: 15px;
 }
 
 nav > ul > li {
     flex: 0 0 auto;
-    width: 15em; 
+    width: 13.5em; 
+    padding: 10px
 }
 
 nav button, nav a {
     display: block;
     box-sizing: border-box; /* easier to make button and A the same size */
     width: 100%;
-    height: 40px;
-    padding: 0px;
+    height: 50px;
+    padding: 8.5px;
     padding-bottom: 5px;
     background-color: var(--color-header); /* was #3498db */
-    border: 2px solid black;
-    border-radius: 5px;
+    border: 2px solid #2a352e;
+    border-radius: 10px;
     cursor: pointer;
     /* Firefox uses font -apple-system unless I repeat the font spec here. */
     font-family: var(--font-family);
@@ -76,3 +77,6 @@ nav button:hover, button:focus, nav a:hover, nav a:focus {
     background-color: var(--color-focus);
 }
 
+a {
+    color: rgb(9, 29, 16);
+  }
