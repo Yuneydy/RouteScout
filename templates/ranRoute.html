@@ -2,13 +2,16 @@
 
 {% block main_content %}
 
-<h1>form when you run rout</h1>
+<h1>Route Rating Form:</h1>
 
-<form method="post" action="">
-    <p>Please tell us your <label for="username">
-            name: <input type="text" name="username">
+<form method="post" action="ranRoute.html">
+    <p>What route did you run? <label for="routeID">
+            Route ID Number: <input type="int" name="routeID">
     </label></p>
+    <p><label for="introduction">Do you have any comments about the route you ran?</label></p>
+    <textarea id="introduction" name="introduction" rows="5" cols="190"></textarea>
     <p><input type="submit"></p>
 </form>
+
 
 {% endblock %}
