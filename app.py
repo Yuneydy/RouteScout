@@ -44,28 +44,23 @@ def aboutUs():
         return render_template('aboutUs.html')
 
 
-@app.route('/ranRoute/')
+@app.route('/ranRoute/', methods=["GET", "POST"])
 def ranRoute():
-        return render_template('ranRoute.html')
-
-@app.route('/insertRanRoute/', methods=["GET", "POST"])
-def insertRanRoute():
-  if request.method == 'GET':
-        return render_template('ranRoute.html')
-  else:
-        routeNum = request.form.get('route_ID')
-        routeRating = request.form.get('rating')
-        routeComment = request.form.get('comment')
-        num = int(routeNum)
-        rating = int(routeRating)
-        conn = dbi.connect()
-        curs = dbi.cursor(conn)
-        curs.execute(
-        'INSERT INTO route_rating(routeID, rating, comment) VALUES (%s, %s, %s)',
-        (routeNum, routeRating, routeComment)
-        )
-        conn.commit()
-        render_template('ranRoute.html')
+        if request.method == "GET":
+                return render_template('ranRoute.html')
+        else: 
+                routeNum = request.form.get('route_ID')
+                routeRating = request.form.get('rating')
+                routeComment = request.form.get('comment')
+                num = int(routeNum)
+                rating = int(routeRating)
+                conn = dbi.connect()
+                curs = dbi.cursor(conn)
+                curs.execute(
+                'INSERT INTO route_rating(routeID, rating, comment) VALUES (%s, %s, %s)',
+                (routeNum, routeRating, routeComment)) 
+                conn.commit()
+                return render_template('ranRoute.html')
       
     
 
