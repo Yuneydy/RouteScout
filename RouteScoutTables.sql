@@ -40,7 +40,8 @@ create table route_info (
 create table routes_ran (
     routeID integer,
     uid integer,
-    primary key(routeID, uid),
+    route_time_stamp timestamp,
+    primary key(routeID, route_time_stamp),
     foreign key (uid) references user(uid),
     foreign key (routeID) references route_info(routeID)
 );
