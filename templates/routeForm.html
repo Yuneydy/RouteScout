@@ -2,13 +2,93 @@
 
 {% block main_content %}
 
-<h1>This will be the Route Upload Form!</h1>
+<h1>Upload Details About Your Running Route</h1>
 
 <form method="post" action="">
-    <p>Please tell us your <label for="username">
-            name: <input type="text" name="username">
-    </label></p>
-    <p><input type="submit"></p>
+    <p>
+        <label for="username">Username: </label>
+        <input type="text" name="username" id="username" required>
+    </p>
+    
+    <p>
+        <label for="route_name">Route Name: </label>
+        <input type="text" name="route_name" id="route_name" required>
+    </p>
+    
+    <p>
+        <label for="location">Location: </label>
+        <input type="text" name="location" id="location" placeholder="e.g., Wellesley" required>
+    </p>
+    
+    <p>
+        <label for="distance">Distance (miles): </label>
+        <input type="number" name="distance" id="distance" step="0.1" required>
+    </p>
+    
+    <p>
+        <label for="difficulty">Difficulty Level: </label>
+        <select name="difficulty" id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="moderate">Moderate</option>
+            <option value="hard">Challenging</option>
+        </select>
+    </p>
+    
+    <p>
+        <label for="terrain">Terrain Type: </label>
+        <select name="terrain" id="terrain">
+            <option value="pavement">Pavement</option>
+            <option value="trail">Trail</option>
+            <option value="track">Track</option>
+            <option value="asphalt">Asphalt Roads</option>
+            <option value="concrete">Concrete</option>
+            <option value="mixed">Mixed</option>
+        </select>
+    </p>
+    
+    <p>
+        <label for="bathrooms">Were there bathrooms along the route? </label>
+        <input type="radio" name="bathrooms" value="yes" id="bathrooms_yes">
+        <label for="bathrooms_yes">Yes</label>
+        
+        <input type="radio" name="bathrooms" value="no" id="bathrooms_no">
+        <label for="bathrooms_no">No</label>
+
+        <input type="radio" name="bathrooms" value="temp" id="bathrooms_temp">
+        <label for="bathrooms_temp">Temporary</label>
+    </p>
+    
+    <p>
+        <label for="bathroom_location">Bathroom Locations </label>
+        <textarea name="bathroom_location" id="bathroom_location" rows="3" placeholder="Add landmark description"></textarea>
+    </p>
+    
+    <p>
+        <label for="scenic">Scenic Route? </label>
+        <input type="checkbox" name="scenic" id="scenic">
+        <label for="scenic">Yes</label>
+        <input type="checkbox" name="notScenic" id="notScenic">
+        <label for="notScenic">No</label>
+    </p>
+    
+    <p>
+        <label for="rating">Rate this Route (1 - 5): </label>
+        <select name="rating" id="rating">
+            <option value="1">1 - Wouldn't recommend</option>
+            <option value="2">2 - Somewhat enjoyable</option>
+            <option value="3">3 - Pleasant</option>
+            <option value="4">4 - Very Nice</option>
+            <option value="5">5 - Highly recommend</option>
+        </select>
+    </p>
+
+    <p>
+        <label for="notes">Additional Notes or Highlights: </label>
+        <textarea name="notes" id="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
+    </p>
+
+    <p><input type="submit" value="Submit Route"></p>
 </form>
+
 
 {% endblock %}
