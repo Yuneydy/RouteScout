@@ -52,9 +52,16 @@ def signup():
 @app.route('/upload_route/', methods=["GET", "POST"])
 def upload_route():
         return render_template('routeForm.html')
-@app.route('/search_route/', methods=["GET", "POST"])
+
+
+
+@app.route('/routeSearch/', methods=["GET", "POST"])
 def search_route():
+
         return render_template('routeSearch.html')
+
+
+
 @app.route('/profile/', methods=["GET", "POST"])
 def profile():
         return render_template('profile.html')
