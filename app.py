@@ -7,6 +7,7 @@ app = Flask(__name__)
 # change comment characters to switch to SQLite
 
 import cs304dbi as dbi
+
 # import cs304dbi_sqlite3 as dbi
 
 import secrets
@@ -41,10 +42,31 @@ def profileFeed():
 @app.route('/aboutUs/', methods=["GET", "POST"])
 def aboutUs():
         return render_template('aboutUs.html')
-@app.route('/ranRoute/', methods=["GET", "POST"])
+
+
+@app.route('/ranRoute/')
 def ranRoute():
         return render_template('ranRoute.html')
 
+@app.route('/insertRanRoute/', methods=["GET", "POST"])
+def insertRanRoute():
+  if request.method == 'GET':
+        return render_template('ranRoute.html')
+  else:
+        routeNum = request.form.get('route_ID')
+        routeRating = request.form.get('rating')
+        routeComment = request.form.get('comment')
+        num = int(routeNum)
+        rating = int(routeRating)
+        conn = dbi.connect()
+        curs = dbi.cursor(conn)
+        curs.execute(
+        'INSERT INTO route_rating(routeID, rating, comment) VALUES (%s, %s, %s)',
+        (routeNum, routeRating, routeComment)
+        )
+        conn.commit()
+        render_template('ranRoute.html')
+      
     
 
 # This route displays all the data from the submitted form onto the rendered page
@@ -84,7 +106,7 @@ if __name__ == '__main__':
     else:
         port = os.getuid()
     # set this local variable to 'wmdb' or your personal or team db
-    db_to_use = 'put_database_name_here_db' 
+    db_to_use = 'routesct_db' 
     print(f'will connect to {db_to_use}')
     dbi.conf(db_to_use)
     app.debug = True
