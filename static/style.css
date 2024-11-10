@@ -39,6 +39,14 @@ nav ul {
     padding: 15px;
 }
 
+nav a {
+    text-decoration: none;
+}
+
+nav a:hover {
+    cursor: pointer;
+}
+
 nav > ul > li {
     flex: 0 0 auto;
     width: 13.5em; 
@@ -65,6 +73,7 @@ nav button, nav a {
 /* Only the top-level buttons are centered; lower ones are left-aligned. */
 nav > ul > li > button , nav > ul > li > a {
     text-align: center;
+
 }
 
 /* because of the margin trick, this can only be used for the last element */
@@ -80,3 +89,15 @@ nav button:hover, button:focus, nav a:hover, nav a:focus {
 a {
     color: rgb(9, 29, 16);
   }
+
+.aboutPic {
+    border-radius: 20px;
+    width: 300px;
+    height: 300px;
+}
+
+.about {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+}
