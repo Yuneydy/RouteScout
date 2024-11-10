@@ -11,6 +11,18 @@
     </p>
     
     <p>
+        <label for="school">School Affiliation </label>
+        <select name="schoolName" id="schoolAff">
+            <option value="welles">Wellesley</option>
+            <option value="mIT">MIT</option>
+            <option value="harvard">Harvard</option>
+            <option value="bU">Boston University</option>
+            <option value="bC">Boston College</option>
+        </select>
+    </p>
+
+
+    <p>
         <label for="route_name">Route Name: </label>
         <input type="text" name="route_name" id="route_name" required>
     </p>
@@ -37,10 +49,10 @@
     <p>
         <label for="terrain">Terrain Type: </label>
         <select name="terrain" id="terrain">
-            <option value="pavement">Pavement</option>
             <option value="trail">Trail</option>
             <option value="track">Track</option>
             <option value="asphalt">Asphalt Roads</option>
+            <option value="pavement">Pavement</option>
             <option value="concrete">Concrete</option>
             <option value="mixed">Mixed</option>
         </select>
@@ -60,9 +72,23 @@
     
     <p>
         <label for="bathroom_location">Bathroom Locations </label>
-        <textarea name="bathroom_location" id="bathroom_location" rows="3" placeholder="Add landmark description"></textarea>
+        <textarea name="bathroom_location" id="bathroom_location" rows="3" placeholder="e.g., Bathroom at Sudbury Path Trailhead"></textarea>
     </p>
     
+    <p>
+        <label for="water">Were there water stations along the route? </label>
+        <input type="radio" name="water" value="yes" id="water_yes">
+        <label for="water_yes">Yes</label>
+        
+        <input type="radio" name="water" value="no" id="water_no">
+        <label for="water_no">No</label>
+    </p>
+
+    <p>
+        <label for="water_location">Water Locations </label>
+        <textarea name="water_location" id="water_location" rows="3" placeholder="e.g., Water fountain by MIT Boathouse"></textarea>
+    </p>
+
     <p>
         <label for="scenic">Scenic Route? </label>
         <input type="checkbox" name="scenic" id="scenic">
@@ -71,6 +97,7 @@
         <label for="notScenic">No</label>
     </p>
     
+
     <p>
         <label for="rating">Rate this Route (1 - 5): </label>
         <select name="rating" id="rating">
@@ -83,7 +110,7 @@
     </p>
 
     <p>
-        <label for="notes">Additional Notes or Highlights: </label>
+        <label for="notes">Additional Notes or Tips: </label>
         <textarea name="notes" id="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
     </p>
 
