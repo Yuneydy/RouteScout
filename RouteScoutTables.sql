@@ -6,18 +6,19 @@ drop table if exists user;
 drop table if exists route_rating;
 
 create table user (
-    uid integer primary key,
+    uid integer auto_increment,
     created_at timestamp,
     username varchar(50),
     pronouns varchar(20),
     level enum('Beginner', 'Intermediate', 'Advanced'),
     overall_mileage integer,
     average_pace time,
-    routes_created integer
+    routes_created integer,
+    primary key(uid)
 );
 
 create table route_info (
-    routeID integer primary key,
+    routeID integer auto_increment,
     created_at timestamp,
     name varchar(60),
     route_description varchar(300),
@@ -34,23 +35,25 @@ create table route_info (
     water_fountain enum('yes','no'),
     fountain_description point,
     addedBy integer,
-    foreign key (addedBy) references user(uid)
+    primary key(routeID),
+    foreign key (addedBy) references user(uid) ON DELETE CASCADE
 );
 
 create table routes_ran (
     routeID integer,
     uid integer,
     primary key(routeID, uid),
-    foreign key (uid) references user(uid),
-    foreign key (routeID) references route_info(routeID)
+    foreign key (uid) references user(uid) ON DELETE CASCADE,
+    foreign key (routeID) references route_info(routeID) ON DELETE CASCADE
 );
 
 create table route_rating (
-    ratingID integer primary key,
+    ratingID integer auto_increment,
     uid integer,
     routeID integer,
     rating integer,
     comment text,
-    foreign key (routeID) references route_info(routeID),
-    foreign key (uid) references user(uid)
+    primary key (ratingID),
+    foreign key (routeID) references route_info(routeID) ON DELETE CASCADE,
+    foreign key (uid) references user(uid) ON DELETE CASCADE
 );
