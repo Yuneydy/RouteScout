@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <meta charset='utf-8'>
+    <!-- for mobile-friendly pages -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=author content="">
+    <title>{{ page_title }}</title>
+    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
+    {% block head_stuff %} {% endblock %}
+</head>
+<body>
+
+<form id="loginform" action="/login/" method="post">
+    <h2>Login</h2>
+    <p><label>Username: <input type="text" name="username" required pattern="^\w+$"></label></p>
+    <p><label>Password: <input type="password" name="password" required></label></p>
+    <p><button type="submit">Submit</button></p>
+</form>
+
+<a href="{{url_for('signup')}}" target="_blank">
+    <button>Sign Up!</button>
+</a>
+</body>
+</html>

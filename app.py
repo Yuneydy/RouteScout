@@ -7,6 +7,7 @@ app = Flask(__name__)
 # change comment characters to switch to SQLite
 
 import cs304dbi as dbi
+import cs304login as login
 
 # import cs304dbi_sqlite3 as dbi
 
@@ -19,10 +20,31 @@ app.secret_key = secrets.token_hex()
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
-@app.route('/')
-def index():
-    return render_template('main.html',
-                           page_title='Main Page')
+@app.route('/', methods = ["GET", "POST"])
+def login():
+     if request.method == "GET":
+        return render_template('login.html')
+     else:
+        conn = dbi.connect()
+        user = request.form.get("username")
+        passwrd = request.form.get("password")
+        success = login.login_user(conn, user, passwrd)
+        if success[0] == True:
+                return render_template('profileFeed.html')
+              
+@app.route('/join/', methods = ["GET", "POST"])
+def signup():
+      if request.method == "GET":
+            return render_template('signup.html')
+      else:
+                conn = dbi.connect()
+                user = request.form.get("username")
+                passwrd1 = request.form.get("password1")
+                passwrd2 = request.form.get("password2")
+                success = login.insert_user(conn, user, passwrd1, verbose=False)
+                return render_template('signup.html')
+
+        
 
 # You will probably not need the routes below, but they are here
 # just in case. Please delete them if you are not using them

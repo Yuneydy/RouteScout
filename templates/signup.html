@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <meta charset='utf-8'>
+    <!-- for mobile-friendly pages -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=author content="">
+    <title>{{ page_title }}</title>
+    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
+    {% block head_stuff %} {% endblock %}
+</head>
+<body>
+
+
+<form id="joinform" action="/join/" method="post">
+    <h2>Join</h2>
+    <p><label><input type="text" name="username" required pattern="^\w+$"> Username</label></p>
+    <p><label><input type="password" name="password1" required> Password </label></p>
+    <p><label><input type="password" name="password2" required> Password again </label></p>
+    <p><button type="submit">Submit</button></p>
+</form>
+
+<a href="{{url_for('login')}}" target="_blank">
+    <button>Back to Login</button>
+</a>
+
+
+</body>
+</html>
