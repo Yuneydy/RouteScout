@@ -1,9 +1,9 @@
 --Creates tables for RouteScout database
 
-drop table if exists user;
-drop table if exists route_info;
 drop table if exists routes_ran;
 drop table if exists route_rating;
+drop table if exists route_info;
+drop table if exists user;
 
 create table user (
     -- uid integer identity(1, 1) primary key,
