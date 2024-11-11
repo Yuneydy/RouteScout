@@ -14,7 +14,7 @@ create table user (
     pronouns varchar(20),
     level enum('Beginner', 'Intermediate', 'Advanced'),
     overall_mileage integer,
-    average_pace time,
+    average_pace char(4),
     routes_created integer,
     primary key (uid)
 );
