@@ -11,6 +11,16 @@
     </p>
     
     <p>
+        <label for="notes">Route Description, Notes or Tips: </label>
+        <textarea name="notes" id="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
+    </p>
+
+    <p>
+        <label for="distance">Distance (miles): </label>
+        <input type="number" name="distance" id="distance" step="0.01" placeholder="Enter distance in miles" required>
+    </p>    
+
+    <p>
         <label for="location">Starting location </label>
         <select name="startingLocation" id="startingLocation">
             <option value="newt">Newton</option>
@@ -58,6 +68,19 @@
     </p>
     
     <p>
+        <label for="outBack">Was it out and back? </label>
+        <input type="radio" name="outBack" value="yes" id="outBack_yes">
+        <label for="outBack_yes">Yes</label>
+        
+        <input type="radio" name="outBack" value="no" id="outBack_no">
+        <label for="outBack_yes">No</label>
+
+        <input type="radio" name="outBack" value="temp" id="outBack">
+        <label for="outBack_temp">Temporary</label>
+    </p>
+
+
+    <p>
         <label for="distance">Distance (miles): </label>
         <input type="number" name="distance" id="distance" step="0.1" required>
     </p>
@@ -65,9 +88,9 @@
     <p>
         <label for="difficulty">Difficulty Level: </label>
         <select name="difficulty" id="difficulty">
-            <option value="easy">Easy</option>
-            <option value="moderate">Moderate</option>
-            <option value="hard">Challenging</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
         </select>
     </p>
     
@@ -114,14 +137,6 @@
         <textarea name="water_location" id="water_location" rows="3" placeholder="e.g., Water fountain by MIT Boathouse"></textarea>
     </p>
 
-    <p>
-        <label for="scenic">Scenic Route? </label>
-        <input type="checkbox" name="scenic" id="scenic">
-        <label for="scenic">Yes</label>
-        <input type="checkbox" name="notScenic" id="notScenic">
-        <label for="notScenic">No</label>
-    </p>
-    
 
     <p>
         <label for="rating">Rate this Route (1 - 5): </label>
@@ -132,11 +147,6 @@
             <option value="4">4 - Very Nice</option>
             <option value="5">5 - Highly recommend</option>
         </select>
-    </p>
-
-    <p>
-        <label for="notes">Additional Notes or Tips: </label>
-        <textarea name="notes" id="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
     </p>
 
     <p><input type="submit" value="Submit Route"></p>
