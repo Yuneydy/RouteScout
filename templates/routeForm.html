@@ -2,22 +2,66 @@
 
 {% block main_content %}
 
-<h1>Upload Details About Your Running Route</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Route</title>
+</head>
+<body>
+    <h1>Upload Details About Your Running Route</h1>
 
 <form method="post" action="">
     <p>
-        <label for="username">Username: </label>
-        <input type="text" name="username" id="username" required>
+        <label for="name">Name: </label>
+        <input type="text" name="name" id="username" required>
     </p>
     
     <p>
-        <label for="school">School Affiliation </label>
-        <select name="schoolName" id="schoolAff">
+        <label for="notes">Route Description, Notes or Tips: </label>
+        <textarea name="notes" id="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
+    </p>
+
+    <label for="route_tcx">Route TCX:</label>
+        <textarea id="route_tcx" name="route_tcx"></textarea><br>
+    <p>
+        <label for="distance">Distance (miles): </label>
+        <input type="number" name="distance" id="distance" step="0.01" placeholder="Enter distance in miles" required>
+    </p>    
+
+    <p>
+        <label for="location">Starting location </label>
+        <select name="startingLocation" id="startingLocation">
+            <option value="newt">Newton</option>
+            <option value="camb">Cambridge</option>
             <option value="welles">Wellesley</option>
-            <option value="mIT">MIT</option>
-            <option value="harvard">Harvard</option>
-            <option value="bU">Boston University</option>
-            <option value="bC">Boston College</option>
+            <option value="framing">Framingham</option>
+            <option value="natick">Natick</option>
+            <option value="walth">Waltham</option>
+            <option value="bos">Boston</option>
+            <option value="somer">Somerville</option>
+            <option value="brookline">Brookline</option>
+            <option value="medford">Medford</option>
+            <option value="malden">Malden</option>
+            <option value="revere">Revere</option>
+        </select>
+    </p>
+
+    <p>
+        <label for="location">Ending </label>
+        <select name="endingLocation" id="endingLocation">
+            <option value="newt">Newton</option>
+            <option value="camb">Cambridge</option>
+            <option value="welles">Wellesley</option>
+            <option value="framing">Framingham</option>
+            <option value="natick">Natick</option>
+            <option value="walth">Waltham</option>
+            <option value="bos">Boston</option>
+            <option value="somer">Somerville</option>
+            <option value="brookline">Brookline</option>
+            <option value="medford">Medford</option>
+            <option value="malden">Malden</option>
+            <option value="revere">Revere</option>
         </select>
     </p>
 
@@ -33,6 +77,18 @@
     </p>
     
     <p>
+        <label for="outBack">Was it out and back? </label>
+        <input type="radio" name="outBack" value="yes" id="outBack_yes">
+        <label for="outBack_yes">Yes</label>
+        
+        <input type="radio" name="outBack" value="no" id="outBack_no">
+        <label for="outBack_yes">No</label>
+
+        <input type="radio" name="outBack" value="temp" id="outBack">
+        <label for="outBack_temp">Temporary</label>
+    </p>
+
+    <p>
         <label for="distance">Distance (miles): </label>
         <input type="number" name="distance" id="distance" step="0.1" required>
     </p>
@@ -40,9 +96,9 @@
     <p>
         <label for="difficulty">Difficulty Level: </label>
         <select name="difficulty" id="difficulty">
-            <option value="easy">Easy</option>
-            <option value="moderate">Moderate</option>
-            <option value="hard">Challenging</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
         </select>
     </p>
     
@@ -89,14 +145,6 @@
         <textarea name="water_location" id="water_location" rows="3" placeholder="e.g., Water fountain by MIT Boathouse"></textarea>
     </p>
 
-    <p>
-        <label for="scenic">Scenic Route? </label>
-        <input type="checkbox" name="scenic" id="scenic">
-        <label for="scenic">Yes</label>
-        <input type="checkbox" name="notScenic" id="notScenic">
-        <label for="notScenic">No</label>
-    </p>
-    
 
     <p>
         <label for="rating">Rate this Route (1 - 5): </label>
@@ -108,13 +156,10 @@
             <option value="5">5 - Highly recommend</option>
         </select>
     </p>
+</body>
 
-    <p>
-        <label for="notes">Additional Notes or Tips: </label>
-        <textarea name="notes" id="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
-    </p>
 
-    <p><input type="submit" value="Submit Route"></p>
+    <button type="submit">Submit</button>
 </form>
 
 
