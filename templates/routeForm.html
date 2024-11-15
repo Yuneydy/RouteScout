@@ -2,7 +2,14 @@
 
 {% block main_content %}
 
-<h1>Upload Details About Your Running Route</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Route</title>
+</head>
+<body>
+    <h1>Upload Details About Your Running Route</h1>
 
 <form method="post" action="">
     <p>
@@ -15,6 +22,8 @@
         <textarea name="notes" id="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
     </p>
 
+    <label for="route_tcx">Route TCX:</label>
+        <textarea id="route_tcx" name="route_tcx"></textarea><br>
     <p>
         <label for="distance">Distance (miles): </label>
         <input type="number" name="distance" id="distance" step="0.01" placeholder="Enter distance in miles" required>
@@ -78,7 +87,6 @@
         <input type="radio" name="outBack" value="temp" id="outBack">
         <label for="outBack_temp">Temporary</label>
     </p>
-
 
     <p>
         <label for="distance">Distance (miles): </label>
@@ -148,8 +156,10 @@
             <option value="5">5 - Highly recommend</option>
         </select>
     </p>
+</body>
 
-    <p><input type="submit" value="Submit Route"></p>
+
+    <button type="submit">Submit</button>
 </form>
 
 
