@@ -1,4 +1,4 @@
-use routesct_db;
+git use routesct_db;
 
 insert into user(username, password, pronouns, level, overall_mileage, average_pace, routes_created) 
 values ('mhansen', 'iheartroutescout', 'she/her', 'Beginner', 0, 0840, 0);

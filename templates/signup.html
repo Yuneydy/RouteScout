@@ -20,10 +20,23 @@
     <p><label><input type="text" name="username" required pattern="^\w+$"> Username</label></p>
     <p><label><input type="password" name="password1" required> Password </label></p>
     <p><label><input type="password" name="password2" required> Password again </label></p>
+
+    <p><label><input type="text" name="pronouns">Pronouns</label></p>
+    <p><label for="level">What's your level?</label></p>
+
+    <select name="level" id="level">
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate">Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+
+    <p><label><input type="text" name="overall_mileage">What is your current overall mileage?</label></p>
+    <p><label>What is your current averzge pace:</label><input type="text" name="average_pace_hour">:<input type="text" name="average_pace_min"></p>
+    
     <p><button type="submit">Submit</button></p>
 </form>
 
-<a href="{{url_for('login')}}" target="_blank">
+<a href="{{url_for('login')}}" target="_self">
     <button>Back to Login</button>
 </a>
 

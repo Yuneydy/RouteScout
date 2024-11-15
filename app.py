@@ -116,10 +116,10 @@ def ranRoute():
                 'INSERT INTO route_rating(routeID, rating, comment) VALUES (%s, %s, %s)',
                 (routeNum, routeRating, routeComment)) 
                 conn.commit()
+                flash('Your route review has been submitted! Thank you!')
                 return render_template('ranRoute.html')
       
     
-
 # This route displays all the data from the submitted form onto the rendered page
 # It's unlikely you will ever need anything like this in your own applications, so
 # you should probably delete this handler
