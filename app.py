@@ -51,7 +51,34 @@ def signup():
 
 @app.route('/upload_route/', methods=["GET", "POST"])
 def upload_route():
-        return render_template('routeForm.html')
+        if request.method == "GET":
+                return render_template('routeForm.html')
+        else: # Get data from the form
+                name = request.form['name']
+                route_description = request.form['route_description']
+                route_tcx = request.form['route_tcx']
+                level = request.form['level']
+                mileage = request.form['mileage']
+                conn = dbi.connect()
+                curs = dbi.cursor(conn)
+                curs.execute(
+                'INSERT INTO RouteScoutTables(name, route_description, route_tcx, level, mileage, created_at) VALUES (%s, %s, %s)',
+                #(routeNum, routeRating, routeComment)) 
+                conn.commit()
+                # Construct the SQL query
+                #  query = """
+                # INSERT INTO route_info (name, route_description, route_tcx, level, mileage, created_at)
+                # VALUES (%s, %s, %s, %s, %s, NOW())
+                conn.commit()
+                return render_template('routeForm.html')
+    
+   # values = (name, route_description, route_tcx, level, mileage)
+
+
+    # Execute the query
+    #cursor.execute(query, values)
+    #conn.commit()
+        #return render_template('routeForm.html')
 
 
 
@@ -119,8 +146,34 @@ def testform():
     # these forms go to the formecho route
     return render_template('testform.html',
                            page_title='Page with two Forms')
+'''
 
+@app.route('/add_route/', methods=['POST'])
+def add_route():
+    # Connect to the database
+    conn = dbi.connect()
+    cursor = conn.cursor()
 
+    # Get data from the form
+    name = request.form['name']
+    route_description = request.form['route_description']
+    route_tcx = request.form['route_tcx']
+    level = request.form['level']
+    mileage = request.form['mileage']
+
+    # Construct the SQL query
+    query = """
+        INSERT INTO route_info (name, route_description, route_tcx, level, mileage, created_at)
+        VALUES (%s, %s, %s, %s, %s, NOW())
+    """
+    values = (name, route_description, route_tcx, level, mileage)
+
+    # Execute the query
+    cursor.execute(query, values)
+    conn.commit()
+
+    return redirect('/')
+'''
 if __name__ == '__main__':
     import sys, os
     if len(sys.argv) > 1:
