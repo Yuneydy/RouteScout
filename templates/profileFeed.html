@@ -2,13 +2,26 @@
 
 {% block main_content %}
 
-<h1>feed of run routes</h1>
+<h1>All Running Routes</h1>
 
-<form method="post" action="">
-    <p>Please tell us your <label for="username">
-            name: <input type="text" name="username">
-    </label></p>
-    <p><input type="submit"></p>
-</form>
+<div class="route-container">
+    {% for route in routes %}
+    <div class="route-box">
+        <h2>{{route[2]}}</h2>
+        <p><b>Uploaded By:</b> {{route[19]}}</p>
+        <p><b>Date/Time:</b> {{route[1]}}</p>
+        <p><b>Description:</b> {{route[3]}}</p>
+        <p><b>Level:</b> {{route[5]}}</p>
+        <p><b>Miles:</b> {{route[6]}}</p>
+        <p><b>Start:</b> {{route[8]}}</p>
+        <p><b>End:</b> {{route[10]}}</p>
+        <p><b>Out N Back?</b> {{route[11]}}</p>
+        <p><b>Bathroom?</b> {{route[12]}}</p>
+        <p><b>Where?</b> {{route[13]}}</p>
+        <p><b>Water Fountain?</b> {{route[14]}}</p>
+        <p><b>Where?</b> {{route[15]}}</p>
+    </div>
+    {% endfor %}
+</div>
 
 {% endblock %}

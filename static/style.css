@@ -101,3 +101,19 @@ a {
     flex-direction: row;
     text-align: center;
 }
+
+.route-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    justify-content: flex-start;
+}
+
+.route-box {
+    background-color: #f7f6f2;
+    text-align: left;
+    width: 50%;
+    padding: 20px;
+    border-radius: 10px;
+}

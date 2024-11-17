@@ -10,7 +10,7 @@ import cs304dbi as dbi
 import cs304login as login
 
 # import cs304dbi_sqlite3 as dbi
-
+import queries as q
 import secrets
 
 app.secret_key = 'your secret here'
@@ -61,7 +61,7 @@ def upload_route():
                 mileage = request.form['mileage']
                 conn = dbi.connect()
                 curs = dbi.cursor(conn)
-                curs.execute(
+                curs.execute()
                 'INSERT INTO RouteScoutTables(name, route_description, route_tcx, level, mileage, created_at) VALUES (%s, %s, %s)',
                 #(routeNum, routeRating, routeComment)) 
                 conn.commit()
@@ -84,7 +84,6 @@ def upload_route():
 
 @app.route('/routeSearch/', methods=["GET", "POST"])
 def search_route():
-
         return render_template('routeSearch.html')
 
 
@@ -92,9 +91,14 @@ def search_route():
 @app.route('/profile/', methods=["GET", "POST"])
 def profile():
         return render_template('profile.html')
+
 @app.route('/profileFeed/', methods=["GET", "POST"])
 def profileFeed():
-        return render_template('profileFeed.html')
+        conn = dbi.connect()
+        routes = q.get_all_routes(conn)
+        print("here are the routes: ", routes)
+        return render_template('profileFeed.html', routes=routes)
+
 @app.route('/aboutUs/', methods=["GET", "POST"])
 def aboutUs():
         return render_template('aboutUs.html')
