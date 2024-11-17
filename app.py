@@ -69,7 +69,7 @@ def upload_route():
                 waterFount = request.form.get("water_fountain")
                 fountDescrip = request.form.get("fountain_description")
                 
-                mile = int(mile)
+                #mile = int(mile)
 
                 conn = dbi.connect()
                 curs = dbi.cursor(conn)
