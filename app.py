@@ -95,8 +95,13 @@ def profile():
 @app.route('/profileFeed/', methods=["GET", "POST"])
 def profileFeed():
         conn = dbi.connect()
-        routes = q.get_all_routes(conn)
-        print("here are the routes: ", routes)
+        filter_option = request.args.get("filter")
+
+        if filter_option == "user":
+                user_id = 2 # hard-coded for now
+                routes = q.get_user_routes(conn, user_id)
+        else:
+                routes = q.get_all_routes(conn)
         return render_template('profileFeed.html', routes=routes)
 
 @app.route('/aboutUs/', methods=["GET", "POST"])
