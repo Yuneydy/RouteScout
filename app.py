@@ -54,35 +54,32 @@ def upload_route():
         if request.method == "GET":
                 return render_template('routeForm.html')
         else: # Get data from the form
-                userName = request.form.get("name")
-                routeDescrip = request.form.get("route_description")
+                conn = dbi.connect()
+                userName = request.form.get("name1")
+                routeDescrip = request.form.get("notes")
                 routeTcx = request.form.get("route_tcx")
-                levelRun = request.form.get("level")
-                mile = request.form.get("mileage")
+                levelRun = request.form.get("difficulty")
+                mile = request.form.get("distance")
                 startLoc = request.form.get("starting_location")
                 startTow = request.form.get("starting_town")
                 endLoc = request.form.get("finishing_location")
                 endTow = request.form.get("finishing_town")
                 outBack = request.form.get("out_and_back")
-                bathr = request.form.get("bathroom")
-                bathDescrip = request.form.get("bathroom_description")
-                waterFount = request.form.get("water_fountain")
-                fountDescrip = request.form.get("fountain_description")
+                bathr = request.form.get("bathrooms")
+                bathDescrip = request.form.get("bathroom_location")
+                waterFount = request.form.get("water")
+                fountDescrip = request.form.get("water_location")
                 
-                #mile = int(mile)
+                print(userName)
 
-                conn = dbi.connect()
+                numMile = float(mile)
+                print (numMile)
+        
                 curs = dbi.cursor(conn)
-
-                curs.execute(
-                'INSERT INTO RouteScoutTables(name,route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description) VALUES (%s, %s, %s, %s, %s, %s)',
-                (userName, routeDescrip, routeTcx, levelRun, mile, startLoc, startTow,endLoc, endTow,outBack, bathr, bathDescrip, waterFount, fountDescrip))
+                curs.execute('''INSERT INTO route_info(name, route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                (userName, routeDescrip, routeTcx, levelRun, numMile, startLoc, startTow, endLoc, endTow, outBack, bathr, bathDescrip, waterFount, fountDescrip))
                 conn.commit()
-                # Construct the SQL query
-                #  query = """
-                # INSERT INTO route_info (name, route_description, route_tcx, level, mileage, created_at)
-                # VALUES (%s, %s, %s, %s, %s, NOW())
-                conn.commit()
+                
                 flash('Your route has been submitted! Thank you!')
                 return render_template('routeForm.html')
         
