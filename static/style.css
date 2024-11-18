@@ -117,3 +117,14 @@ a {
     padding: 20px;
     border-radius: 10px;
 }
+
+.filter-section {
+    margin-bottom: 20px;
+}
+.filter-section label {
+    margin-right: 10px;
+}
+.filter-section input,
+.filter-section select {
+    margin-bottom: 10px;
+}
