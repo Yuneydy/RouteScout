@@ -55,7 +55,7 @@ def upload_route():
                 return render_template('routeForm.html')
         else: # Get data from the form
                 conn = dbi.connect()
-                userName = request.form.get("name1")
+                
                 routeDescrip = request.form.get("notes")
                 routeTcx = request.form.get("route_tcx")
                 levelRun = request.form.get("difficulty")
@@ -76,8 +76,8 @@ def upload_route():
                 print (numMile)
         
                 curs = dbi.cursor(conn)
-                curs.execute('''INSERT INTO route_info(name, route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-                (userName, routeDescrip, routeTcx, levelRun, numMile, startLoc, startTow, endLoc, endTow, outBack, bathr, bathDescrip, waterFount, fountDescrip))
+                curs.execute('''INSERT INTO route_info(, route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                (routeDescrip, routeTcx, levelRun, numMile, startLoc, startTow, endLoc, endTow, outBack, bathr, bathDescrip, waterFount, fountDescrip))
                 conn.commit()
                 
                 flash('Your route has been submitted! Thank you!')
