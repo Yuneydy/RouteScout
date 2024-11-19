@@ -170,8 +170,7 @@ def upload_route(uid):
         
                 curs = dbi.cursor(conn)
                 query = 'INSERT INTO route_info(route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-                curs.execute(query,
-                (routeDescrip, routeTcx, levelRun, numMile, startLoc, startTow, endLoc, endTow, outBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
+                curs.execute(query, (routeDescrip, routeTcx, levelRun, numMile, startLoc, startTow, endLoc, endTow, outBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
                 conn.commit()
                 
                 flash('Your route has been submitted! Thank you!')
@@ -235,7 +234,7 @@ def ranRoute(uid):
                 conn = dbi.connect()
                 curs = dbi.cursor(conn)
                 query = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
-                curs.execute(query, (routeNum, routeRating, routeComment)) 
+                curs.execute(query, (uid, routeNum, routeRating, routeComment)) 
                 conn.commit()
                 flash('Your route review has been submitted! Thank you!')
                 return render_template('ranRoute.html', uid=uid)
