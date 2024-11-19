@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang='en'>
 <head>
@@ -14,15 +15,10 @@
 </head>
 <body>
 
-<form id="loginform" action="/login/" method="post">
-    <h2>Login</h2>
-    <p><label>Username: <input type="text" name="username" required pattern="^\w+$"></label></p>
-    <p><label>Password: <input type="password" name="password" required></label></p>
-    <p><button type="submit">Submit</button></p>
-</form>
+<form method=POST action="{{url_for('intro')}}">
+    <input type="submit" name="submit" value="login">
+    <input type="submit" name="submit" value="signup">
+  </form>
 
-<a href="{{url_for('signUp')}}" target="_self">
-    <button>Sign Up!</button>
-</a>
 </body>
 </html>

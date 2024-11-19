@@ -3,7 +3,7 @@
 {% block main_content %}
 
 
-<form method="post" action="/routeSearch">     
+<form method="post" action="{{url_for('search_route', uid=uid)}}">     
     <script> 
         function updateMileageValue(value) {
             document.getElementById('mileageValue').textContent = value;

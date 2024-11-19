@@ -4,7 +4,7 @@
 
 <h1>Route Rating Form:</h1>
 
-<form method="post" action="{{url_for('ranRoute')}}">
+<form method="post" action="{{url_for('ranRoute', uid=uid)}}">
     <p><label>What Route Number did you run?:
         <input required type="text" name="route_ID">
     </label>

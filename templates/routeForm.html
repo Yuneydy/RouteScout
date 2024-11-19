@@ -11,7 +11,7 @@
 <body>
     <h1>Upload Details About Your Running Route</h1>
 
-<form method="post" action="">
+<form method="post" action="{{url_for('upload_route', uid=uid)}}">
     <p>
         <label for="route_name">Route Name: </label>
         <input type="text" name="route_name" id="route_name" required>

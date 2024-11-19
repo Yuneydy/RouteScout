@@ -2,13 +2,13 @@
 
 {% block main_content %}
 
-<h1>your profile</h1>
 
-<form method="post" action="">
-    <p>Please tell us your <label for="username">
-            name: <input type="text" name="username">
-    </label></p>
-    <p><input type="submit"></p>
-</form>
+<h1>Your profile</h1>
 
+<p>Your username is {{username}}</p>
+<p>Your pronouns are {{pronouns}}</p>
+<p>Your level is {{level}}</p>
+<p>Your overall mileage is {{overallMileage}}</p>
+<p>Your average pace is {{averagePace}}</p>
+<p>The amount of routes you have created: {{routesCreated}}</p>
 {% endblock %}
