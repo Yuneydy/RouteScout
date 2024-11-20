@@ -151,7 +151,8 @@ def upload_route(uid):
                 return render_template('routeForm.html', uid=uid)
         else: # Get data from the form
                 conn = dbi.connect()
-                
+
+                routeName = request.form.get("name")
                 routeDescrip = request.form.get("notes")
                 routeTcx = request.form.get("route_tcx")
                 levelRun = request.form.get("difficulty")
@@ -169,7 +170,7 @@ def upload_route(uid):
                 numMile = float(mile)
         
                 curs = dbi.cursor(conn)
-                query = 'INSERT INTO route_info(route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                query = 'INSERT INTO route_info(routeName, route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
                 curs.execute(query, (routeDescrip, routeTcx, levelRun, numMile, startLoc, startTow, endLoc, endTow, outBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
                 conn.commit()
                 
