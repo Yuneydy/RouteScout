@@ -11,7 +11,7 @@
   <div class="filter-sidebar-content">
     <span class="close-btn" onclick="toggleFilter()">&times;</span>
 
-    <form id="search-filters" method="post" action="{{ url_for('search_route', uid=uid) }}">     
+    <form id="search-filters" method="post" action="{{ url_for('search_route') }}">     
         <script> 
             function updateMileageValue(value) {
                 document.getElementById('mileageValue').textContent = value;

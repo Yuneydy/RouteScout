@@ -27,16 +27,16 @@
 {% block nav %}
 <nav>
   <ul>
-    <li><a href="{{ url_for('profileFeed', uid=uid) }}">Profile Feed</a></li>
-    <li><a href="{{ url_for('search_route', uid=uid) }}">Search Routes</a></li>
-    <li><a href="{{ url_for('aboutUs', uid=uid) }}">About Creators</a></li>
+    <li><a href="{{ url_for('profileFeed') }}">Profile Feed</a></li>
+    <li><a href="{{ url_for('search_route') }}">Search Routes</a></li>
+    <li><a href="{{ url_for('aboutUs') }}">About Creators</a></li>
     <li class="dropdown">
       <a href="javascript:void(0)" class="dropbtn">Profile Options</a>
       <ul class="dropdown-content">
-        <li><a href="{{ url_for('profile', uid=uid) }}">My Profile</a></li>
-        <li><a href="{{ url_for('upload_route', uid=uid) }}">Upload Route</a></li>
-        <li><a href="{{ url_for('ranRoute', uid=uid) }}">I Ran a Route!</a></li>
-        <li id="logout"><a href="{{ url_for('logout', uid=uid) }}">Log Out</a></li>
+        <li><a href="{{ url_for('profile') }}">My Profile</a></li>
+        <li><a href="{{ url_for('upload_route') }}">Upload Route</a></li>
+        <li><a href="{{ url_for('ranRoute') }}">I Ran a Route!</a></li>
+        <li id="logout"><a href="{{ url_for('logout') }}">Log Out</a></li>
       </ul>
     </li>
   </ul>

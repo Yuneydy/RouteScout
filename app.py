@@ -20,6 +20,7 @@ app.secret_key = secrets.token_hex()
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
+# Initial page titled RouteScout that gives you the option of login or sign up
 @app.route('/', methods=["POST", "GET"])
 def intro():
        if request.method == "GET":
@@ -31,6 +32,8 @@ def intro():
               else:
                 return redirect(url_for('signUp'))
 
+# Allows users to login to the website with their username and login, if the
+# login is successful, the user is redirected to their profile feed page
 @app.route('/login/', methods=["POST", "GET"])
 def login():
     if request.method == "GET":
@@ -71,7 +74,8 @@ def login():
                 flash('login incorrect. Try again or join')
                 return redirect( url_for('login'))
 
-              
+# Allows users to create username and password, they will also fill out a form
+# where they input their pronouns, average time, overall mileage, and level
 @app.route('/join/', methods = ["GET", "POST"])
 def signUp():
     if request.method == "GET":
@@ -125,51 +129,59 @@ def signUp():
                 return redirect(url_for('signUp'))
         return redirect( url_for('profile', uid=uid))
 
-@app.route('/logout/<uid>/', methods = ["GET", "POST"])
-def logout(uid):
-    if request.method == "GET":
-          return render_template('logout.html', uid=uid)
-    else:
-        if 'username' in session:
-                username = session['username']
-                session.pop('username')
-                session.pop('uid')
-                session.pop('logged_in')
-                flash('You are logged out')
-                return redirect(url_for('login'))
-        else:
-                flash('you are not logged in. Please login or join')
-                return redirect( url_for('signUp') )
+# Logs users out of the website and redirects them back to the route scout intro page
+# where they will have the choice to sign up or log in
+@app.route('/logout/', methods = ["GET", "POST"])
+def logout():
+   uid = session.get('uid')
+   if (uid is None):
+          return redirect(url_for('intro'))
+   if request.method == "GET":
+         return render_template('logout.html')
+   else:
+       if 'username' in session:
+               username = session['username']
+               session.pop('username')
+               session.pop('uid')
+               session.pop('logged_in')
+               flash('You are logged out')
+               return redirect(url_for('login'))
+       else:
+               flash('you are not logged in. Please login or join')
+               return redirect(url_for('intro') )
 
-@app.route('/upload_route/<uid>/', methods=["GET", "POST"])
-def upload_route(uid):
-        if request.method == "GET":
-                return render_template('routeForm.html', uid=uid)
-        else: # Get data from the form
-                conn = dbi.connect()
 
-                routeName = request.form.get("name")
-                routeDescrip = request.form.get("notes")
-                routeTcx = request.form.get("route_tcx")
-                levelRun = request.form.get("difficulty")
-                mile = request.form.get("distance")
-                startTow = request.form.get("starting_town")
-                endTow = request.form.get("finishing_town")
-                outAndBack = request.form.get("outBack")
-                bathr = request.form.get("bathrooms")
-                bathDescrip = request.form.get("bathroom_location")
-                waterFount = request.form.get("water")
-                fountDescrip = request.form.get("water_location")
+# Allows users to upload their route
+@app.route('/upload_route/', methods=["GET", "POST"])
+def upload_route():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       if request.method == "GET":
+               return render_template('routeForm.html')
+       else: # Get data from the form
+               conn = dbi.connect()
+
+
+               routeName = request.form.get("name")
+               routeDescrip = request.form.get("notes")
+               routeTcx = request.form.get("route_tcx")
+               levelRun = request.form.get("difficulty")
+               mile = request.form.get("distance")
+               startTow = request.form.get("starting_town")
+               endTow = request.form.get("finishing_town")
+               outAndBack = request.form.get("outBack")
+               bathr = request.form.get("bathrooms")
+               bathDescrip = request.form.get("bathroom_location")
+               waterFount = request.form.get("water")
+               fountDescrip = request.form.get("water_location")
+
 
                 numMile = float(mile)
         
                 curs = dbi.cursor(conn)
-                query = '''INSERT INTO route_info(name, route_description, route_tcx, level, mileage, 
-                starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
-                bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-                curs.execute(query, (routeName, routeDescrip, routeTcx, levelRun, numMile, 
-                             None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
+                query = 'INSERT INTO route_info(name, route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                curs.execute(query, (routeName, routeDescrip, routeTcx, levelRun, numMile, None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
                 conn.commit()
                 
                 flash('Your route has been submitted! Thank you!')
@@ -195,63 +207,78 @@ def search_route(uid):
                 routes = q.get_all_routes(conn)
                 return render_template('routeSearch.html', routes=routes, uid=uid)
 
+# Shows user their own profile information
+@app.route('/profile/', methods=["GET", "POST"])
+def profile():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       conn = dbi.connect()
+       curs = dbi.dict_cursor(conn)
+       findUserNamequery = 'SELECT username from userpass where uid=%s'
+       curs.execute(findUserNamequery, uid)
+       row = curs.fetchone()
+       print(row)
+       username = row['username']
+       findUserInfoquery = 'select * from user where uid=%s'
+       curs.execute(findUserInfoquery, uid)
+       row = curs.fetchone()
+       print(row)
+       pronouns = row['pronouns']
+       level = row['level']
+       overallMileage = row['overall_mileage']
+       averagePace = row['average_pace']
+       routesCreated = row['routes_created']
+       return render_template('profile.html', username=username, pronouns=pronouns, level=level, overallMileage=overallMileage, averagePace=averagePace, routesCreated=routesCreated)
 
-@app.route('/profile/<uid>/', methods=["GET", "POST"])
-def profile(uid):
-        conn = dbi.connect()
-        curs = dbi.dict_cursor(conn)
-        findUserNamequery = 'SELECT username from userpass where uid=%s'
-        curs.execute(findUserNamequery, uid)
-        row = curs.fetchone()
-        print(row)
-        username = row['username']
-        findUserInfoquery = 'select * from user where uid=%s'
-        curs.execute(findUserInfoquery, uid)
-        row = curs.fetchone()
-        print(row)
-        pronouns = row['pronouns']
-        level = row['level']
-        overallMileage = row['overall_mileage']
-        averagePace = row['average_pace']
-        routesCreated = row['routes_created']
-        return render_template('profile.html', username=username, pronouns=pronouns, level=level, overallMileage=overallMileage, averagePace=averagePace, routesCreated=routesCreated, uid=uid)
-
-@app.route('/profileFeed/<uid>/', methods=["GET", "POST"])
-def profileFeed(uid):
-        conn = dbi.connect()
-        filter_option = request.args.get("filter")
-
-        if filter_option == "user":
-                user_id = uid
-                routes = q.get_user_routes(conn, user_id)
-        else:
-                routes = q.get_all_routes(conn)
-        return render_template('profileFeed.html', routes=routes, uid=uid)
-
-
-
-@app.route('/aboutUs/<uid>/', methods=["GET", "POST"])
-def aboutUs(uid):
-        return render_template('aboutUs.html', uid=uid)
+#Displays all routes or just the routes the user has created
+@app.route('/profileFeed/', methods=["GET", "POST"])
+def profileFeed():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       conn = dbi.connect()
+       filter_option = request.args.get("filter")
 
 
-@app.route('/ranRoute/<uid>/', methods=["GET", "POST"])
-def ranRoute(uid):
-        if request.method == "GET":
-                return render_template('ranRoute.html', uid=uid)
-        else: 
-                routeNum = request.form.get('route_ID')
-                routeRating = request.form.get('rating')  
-                routeComment = request.form.get('comment')
-                num = int(routeNum)
-                rating = int(routeRating)
-                conn = dbi.connect()
-                curs = dbi.cursor(conn)
-                query = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
-                curs.execute(query, (uid, routeNum, routeRating, routeComment)) 
-                conn.commit()
-                flash('Your route review has been submitted! Thank you!')
-                return render_template('ranRoute.html', uid=uid)
+       if filter_option == "user":
+               user_id = uid
+               routes = q.get_user_routes(conn, user_id)
+       else:
+               routes = q.get_all_routes(conn)
+       return render_template('profileFeed.html', routes=routes)
+
+# Gives informations about creators
+@app.route('/aboutUs/', methods=["GET", "POST"])
+def aboutUs():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       return render_template('aboutUs.html')
+
+# Allows users to say which routes they have completed and give them a rating
+# and a comment
+@app.route('/ranRoute/', methods=["GET", "POST"])
+def ranRoute():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       if request.method == "GET":
+               return render_template('ranRoute.html')
+       else:
+               routeNum = request.form.get('route_ID')
+               routeRating = request.form.get('rating') 
+               routeComment = request.form.get('comment')
+               num = int(routeNum)
+               rating = int(routeRating)
+               conn = dbi.connect()
+               curs = dbi.cursor(conn)
+               query = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
+               curs.execute(query, (uid, routeNum, routeRating, routeComment))
+               conn.commit()
+               flash('Your route review has been submitted! Thank you!')
+               return render_template('ranRoute.html')
+
       
     
 # This route displays all the data from the submitted form onto the rendered page
