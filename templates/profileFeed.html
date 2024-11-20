@@ -5,7 +5,7 @@
 <h1>All Running Routes</h1>
 
 <div class="filter-form">
-    <form method="GET" action="{{url_for('profileFeed')}}">
+    <form method="GET" action="{{url_for('profileFeed', uid=uid)}}">
     <label>
         <input required type="radio" name="filter" value="all">
         Show All Runs

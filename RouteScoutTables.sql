@@ -6,10 +6,9 @@ drop table if exists route_info;
 drop table if exists user;
 
 create table user (
-    uid integer not null auto_increment,
+    uid integer not null,
     created_at timestamp,
     username varchar(50),
-    password char(60),
     pronouns varchar(20),
     level enum('Beginner', 'Intermediate', 'Advanced'),
     overall_mileage integer,
