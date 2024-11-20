@@ -125,10 +125,10 @@ def signUp():
                 return redirect(url_for('signUp'))
         return redirect( url_for('profile', uid=uid))
 
-@app.route('/logout/', methods = ["GET", "POST"])
-def logout():
+@app.route('/logout/<uid>/', methods = ["GET", "POST"])
+def logout(uid):
     if request.method == "GET":
-          return render_template('logout.html')
+          return render_template('logout.html', uid=uid)
     else:
         if 'username' in session:
                 username = session['username']
