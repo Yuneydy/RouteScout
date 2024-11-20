@@ -3,101 +3,145 @@
 {% block main_content %}
 
 
-<form method="post" action="{{url_for('search_route', uid=uid)}}">     
-    <script> 
-        function updateMileageValue(value) {
-            document.getElementById('mileageValue').textContent = value;
-        } 
-    </script> 
-        <form id="filterForm">
-            <!-- Filter Section -->
-            <div class="filter-section">
-                <label>Route Name:</label>
-                <input type="text" id="name" name="name" placeholder="Enter route name">
-            </div>
-    
-            <div class="filter-section">
-                <label for="level">Difficulty Level:</label>
-                <select id="level" name="level">
-                    <option value="Any">Any</option>
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                </select>
-            </div>
-    
-            <div class="filter-section">
-                <label>Maximum Mileage:</label>
-                <input type="range" id="mileage" name="mileage" min="0" max="25" value="25" oninput="updateMileageValue(this.value)">
-                <span id="mileageValue">25</span> miles
-            </div>
-    
-            <div class="filter-section">
-                <label>Starting Town:</label>
-                <select id="starting_town" name="starting_town">
-                    <option value="Any">Any</option>
-                    <option value="Newton">Newton</option>
-                    <option value="Cambridge">Cambridge</option>
-                    <option value="Wellesley">Wellesley</option>
-                    <option value="Boston">Boston</option>
-                    <option value="Framingham">Framingham</option>
-                    <option value="Natick">Natick</option>
-                    <option value="Waltham">Waltham</option>
-                    <option value="Somerville">Somerville</option>
-                    <option value="Brookline">Brookline</option>
-                    <option value="Medford">Medford</option>
-                    <option value="Malden">Malden</option>
-                    <option value="Revere">Revere</option>
-                </select>
-            </div>
-    
-            <div class="filter-section">
-                <label>Finishing Town:</label>
-                <select id="finishing_town" name="finishing_town">
-                    <option value="Any">Any</option>
-                    <option value="Newton">Newton</option>
-                    <option value="Cambridge">Cambridge</option>
-                    <option value="Wellesley">Wellesley</option>
-                    <option value="Boston">Boston</option>
-                    <option value="Framingham">Framingham</option>
-                    <option value="Natick">Natick</option>
-                    <option value="Waltham">Waltham</option>
-                    <option value="Somerville">Somerville</option>
-                    <option value="Brookline">Brookline</option>
-                    <option value="Medford">Medford</option>
-                    <option value="Malden">Malden</option>
-                    <option value="Revere">Revere</option>
-                </select>
-            </div>
-    
-            <div class="filter-section">
-                <label>Out and Back:</label>
-                <select id="out_and_back" name="out_and_back">
-                    <option value="n/a">n/a</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                </select>
-            </div>
-    
-            <div class="filter-section">
-                <label>Bathroom Available:</label>
-                <select id="bathroom" name="bathroom">
-                    <option value="n/a">n/a</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                </select>
-            </div>
-    
-            <div class="filter-section">
-                <label>Water Fountain Available:</label>
-                <select id="water_fountain" name="water_fountain">
-                    <option value="n/a">n/a</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                </select>
-            </div>
-    
-            <button type="submit">Search</button>  
-</form>
+<!-- Button to open the filter side pop-up -->
+<button class="open-filter-btn" onclick="toggleFilter()">Filters</button>
+
+<!-- Side Pop-Up for Filters -->
+<div id="filterSidebar" class="filter-sidebar">
+  <div class="filter-sidebar-content">
+    <span class="close-btn" onclick="toggleFilter()">&times;</span>
+
+    <form id="search-filters" method="post" action="{{ url_for('search_route', uid=uid) }}">     
+        <script> 
+            function updateMileageValue(value) {
+                document.getElementById('mileageValue').textContent = value;
+            }
+            function toggleFilter() {
+                var sidebar = document.getElementById("filterSidebar");
+                var overlay = document.getElementById("overlay");
+
+                if (sidebar.classList.contains("open")) {
+                    sidebar.classList.remove("open");
+                    overlay.style.display = "none";  // Hide overlay when closing
+                } else {
+                    sidebar.classList.add("open");
+                    overlay.style.display = "block"; // Show overlay when opening
+                }
+            }
+        </script>
+        
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <label>Route Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter route name">
+        </div>
+
+        <div class="filter-section">
+            <label for="level">Difficulty Level:</label>
+            <select id="level" name="level">
+                <option value="Any">Any</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Maximum Mileage:</label>
+            <input type="range" id="mileage" name="mileage" min="0" max="25" value="25" oninput="updateMileageValue(this.value)">
+            <span id="mileageValue">25</span> miles
+        </div>
+
+        <div class="filter-section">
+            <label>Starting Town:</label>
+            <select id="starting_town" name="starting_town">
+                <option value="Any">Any</option>
+                <option value="Newton">Newton</option>
+                <option value="Cambridge">Cambridge</option>
+                <option value="Wellesley">Wellesley</option>
+                <option value="Boston">Boston</option>
+                <option value="Framingham">Framingham</option>
+                <option value="Natick">Natick</option>
+                <option value="Waltham">Waltham</option>
+                <option value="Somerville">Somerville</option>
+                <option value="Brookline">Brookline</option>
+                <option value="Medford">Medford</option>
+                <option value="Malden">Malden</option>
+                <option value="Revere">Revere</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Finishing Town:</label>
+            <select id="finishing_town" name="finishing_town">
+                <option value="Any">Any</option>
+                <option value="Newton">Newton</option>
+                <option value="Cambridge">Cambridge</option>
+                <option value="Wellesley">Wellesley</option>
+                <option value="Boston">Boston</option>
+                <option value="Framingham">Framingham</option>
+                <option value="Natick">Natick</option>
+                <option value="Waltham">Waltham</option>
+                <option value="Somerville">Somerville</option>
+                <option value="Brookline">Brookline</option>
+                <option value="Medford">Medford</option>
+                <option value="Malden">Malden</option>
+                <option value="Revere">Revere</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Out and Back:</label>
+            <select id="out_and_back" name="out_and_back">
+                <option value="n/a">n/a</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Bathroom Available:</label>
+            <select id="bathroom" name="bathroom">
+                <option value="n/a">n/a</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Water Fountain Available:</label>
+            <select id="water_fountain" name="water_fountain">
+                <option value="n/a">n/a</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+
+        <button type="submit">Search</button>
+    </form>
+
+
+  </div>
+</div>
+<div class="route-container">
+    {% for route in routes %}
+    <div class="route-box">
+        <h2>{{route[2]}}</h2>
+        <p><b>Route ID:</b> {{route[0]}}</p>
+        <p><b>Uploaded By:</b> {{route[19]}}</p>
+        <p><b>Date/Time:</b> {{route[1]}}</p>
+        <p><b>Description:</b> {{route[3]}}</p>
+        <p><b>Level:</b> {{route[5]}}</p>
+        <p><b>Miles:</b> {{route[6]}}</p>
+        <p><b>Start:</b> {{route[8]}}</p>
+        <p><b>End:</b> {{route[10]}}</p>
+        <p><b>Out N Back?</b> {{route[11]}}</p>
+        <p><b>Bathroom?</b> {{route[12]}}</p>
+        <p><b>Where?</b> {{route[13]}}</p>
+        <p><b>Water Fountain?</b> {{route[14]}}</p>
+        <p><b>Where?</b> {{route[15]}}</p>
+    </div>
+    {% endfor %}
+</div>
 
 {% endblock %}

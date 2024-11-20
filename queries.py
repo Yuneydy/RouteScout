@@ -23,7 +23,8 @@ def get_routes(conn, name, level, mileage, start, finish, out, bath, water):
     if name != None:
         sql += 'name like %s and '
         filters.append('%'+ name + '%')
-    if level != None:
+        print(name)
+    if level != 'Any':
         sql += 'level like %s and '
         filters.append(level)
     if mileage != 25:

@@ -140,10 +140,6 @@ def logout(uid):
         else:
                 flash('you are not logged in. Please login or join')
                 return redirect( url_for('signUp') )
-        
-
-# You will probably not need the routes below, but they are here
-# just in case. Please delete them if you are not using them
 
 @app.route('/upload_route/<uid>/', methods=["GET", "POST"])
 def upload_route(uid):
@@ -192,9 +188,12 @@ def search_route(uid):
                 bath = request.form.get("bathroom")
                 waterFount = request.form.get("water_fountain")
 
-                results = q.get_routes(conn, route, level, mile, startTown, endTown, outBack, bath, waterFount)
-                print(results)
-        return render_template('routeSearch.html', uid=uid)
+                routes = q.get_routes(conn, route, level, mile, startTown, endTown, outBack, bath, waterFount)
+                print(routes)
+                return render_template('routeSearch.html', routes=routes, uid=uid)
+        else:
+                routes = q.get_all_routes(conn)
+                return render_template('routeSearch.html', routes=routes, uid=uid)
 
 
 @app.route('/profile/<uid>/', methods=["GET", "POST"])
