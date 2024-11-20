@@ -145,7 +145,7 @@ def logout():
 # You will probably not need the routes below, but they are here
 # just in case. Please delete them if you are not using them
 
-@app.route('/upload_route/<uid>', methods=["GET", "POST"])
+@app.route('/upload_route/<uid>/', methods=["GET", "POST"])
 def upload_route(uid):
         if request.method == "GET":
                 return render_template('routeForm.html', uid=uid)
@@ -177,12 +177,12 @@ def upload_route(uid):
                 return render_template('routeForm.html', uid=uid)
 
 
-@app.route('/routeSearch/<uid>', methods=["GET", "POST"])
+@app.route('/routeSearch/<uid>/', methods=["GET", "POST"])
 def search_route(uid):
         return render_template('routeSearch.html', uid=uid)
 
 
-@app.route('/profile/<uid>', methods=["GET", "POST"])
+@app.route('/profile/<uid>/', methods=["GET", "POST"])
 def profile(uid):
         conn = dbi.connect()
         curs = dbi.dict_cursor(conn)
@@ -202,7 +202,7 @@ def profile(uid):
         routesCreated = row['routes_created']
         return render_template('profile.html', username=username, pronouns=pronouns, level=level, overallMileage=overallMileage, averagePace=averagePace, routesCreated=routesCreated, uid=uid)
 
-@app.route('/profileFeed/<uid>', methods=["GET", "POST"])
+@app.route('/profileFeed/<uid>/', methods=["GET", "POST"])
 def profileFeed(uid):
         conn = dbi.connect()
         filter_option = request.args.get("filter")
@@ -216,12 +216,12 @@ def profileFeed(uid):
 
 
 
-@app.route('/aboutUs/<uid>', methods=["GET", "POST"])
+@app.route('/aboutUs/<uid>/', methods=["GET", "POST"])
 def aboutUs(uid):
-        return render_template('aboutUs.html')
+        return render_template('aboutUs.html', uid=uid)
 
 
-@app.route('/ranRoute/<uid>', methods=["GET", "POST"])
+@app.route('/ranRoute/<uid>/', methods=["GET", "POST"])
 def ranRoute(uid):
         if request.method == "GET":
                 return render_template('ranRoute.html', uid=uid)
