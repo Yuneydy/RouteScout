@@ -175,17 +175,17 @@ def upload_route():
                bathDescrip = request.form.get("bathroom_location")
                waterFount = request.form.get("water")
                fountDescrip = request.form.get("water_location")
-
-
-                numMile = float(mile)
-        
-                curs = dbi.cursor(conn)
-                query = 'INSERT INTO route_info(name, route_description, route_tcx, level, mileage, starting_location, starting_town, finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-                curs.execute(query, (routeName, routeDescrip, routeTcx, levelRun, numMile, None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
-                conn.commit()
-                
-                flash('Your route has been submitted! Thank you!')
-                return render_template('routeForm.html', uid=uid)
+               numMile = float(mile)
+               curs = dbi.cursor(conn)
+               query = '''INSERT INTO route_info(name, route_description, route_tcx, level, mileage, 
+                starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
+                bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+               curs.execute(query, (routeName, routeDescrip, routeTcx, levelRun, numMile, 
+                             None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
+               conn.commit()
+               flash('Your route has been submitted! Thank you!')
+               return render_template('routeForm.html', uid=uid)
 
 @app.route('/routeSearch/<uid>/', methods=["GET", "POST"])
 def search_route(uid):
