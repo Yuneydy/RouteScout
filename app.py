@@ -175,9 +175,8 @@ def upload_route(uid):
                 flash('Your route has been submitted! Thank you!')
                 return render_template('routeForm.html', uid=uid)
 
-
-@app.route('/routeSearch/', methods=["GET", "POST"])
-def search_route():
+@app.route('/routeSearch/<uid>/', methods=["GET", "POST"])
+def search_route(uid):
         conn = dbi.connect()
         if request.method == 'POST':
                 route = request.form.get("name")
@@ -191,11 +190,6 @@ def search_route():
 
                 results = q.get_routes(conn, route, level, mile, startTown, endTown, outBack, bath, waterFount)
                 print(results)
-                
-        return render_template('routeSearch.html')
-
-@app.route('/routeSearch/<uid>/', methods=["GET", "POST"])
-def search_route(uid):
         return render_template('routeSearch.html', uid=uid)
 
 
