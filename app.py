@@ -91,6 +91,20 @@ def upload_route():
 
 @app.route('/routeSearch/', methods=["GET", "POST"])
 def search_route():
+        conn = dbi.connect()
+        if request.method == 'POST':
+                route = request.form.get("name")
+                level = request.form.get("level")
+                mile = request.form.get("mileage")
+                startTown = request.form.get("starting_town")
+                endTown = request.form.get("finishing_town")
+                outBack = request.form.get("out_and_back")
+                bath = request.form.get("bathroom")
+                waterFount = request.form.get("water_fountain")
+
+                results = q.get_routes(conn, route, level, mile, startTown, endTown, outBack, bath, waterFount)
+                print(results)
+                
         return render_template('routeSearch.html')
 
 

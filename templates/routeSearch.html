@@ -12,14 +12,14 @@
         <form id="filterForm">
             <!-- Filter Section -->
             <div class="filter-section">
-                <label for="name">Route Name:</label>
+                <label>Route Name:</label>
                 <input type="text" id="name" name="name" placeholder="Enter route name">
             </div>
     
             <div class="filter-section">
                 <label for="level">Difficulty Level:</label>
                 <select id="level" name="level">
-                    <option value="">Any</option>
+                    <option value="Any">Any</option>
                     <option value="Beginner">Beginner</option>
                     <option value="Intermediate">Intermediate</option>
                     <option value="Advanced">Advanced</option>
@@ -28,14 +28,14 @@
     
             <div class="filter-section">
                 <label>Maximum Mileage:</label>
-                <input type="range" id="mileage" name="mileage" min="0" max="25" value="10" oninput="updateMileageValue(this.value)">
-                <span id="mileageValue">10</span> miles
+                <input type="range" id="mileage" name="mileage" min="0" max="25" value="25" oninput="updateMileageValue(this.value)">
+                <span id="mileageValue">25</span> miles
             </div>
     
             <div class="filter-section">
                 <label>Starting Town:</label>
                 <select id="starting_town" name="starting_town">
-                    <option value="">Any</option>
+                    <option value="Any">Any</option>
                     <option value="Newton">Newton</option>
                     <option value="Cambridge">Cambridge</option>
                     <option value="Wellesley">Wellesley</option>
@@ -52,9 +52,9 @@
             </div>
     
             <div class="filter-section">
-                <label for="finishing_town">Finishing Town:</label>
+                <label>Finishing Town:</label>
                 <select id="finishing_town" name="finishing_town">
-                    <option value="">Any</option>
+                    <option value="Any">Any</option>
                     <option value="Newton">Newton</option>
                     <option value="Cambridge">Cambridge</option>
                     <option value="Wellesley">Wellesley</option>
@@ -71,9 +71,9 @@
             </div>
     
             <div class="filter-section">
-                <label for="out_and_back">Out and Back:</label>
+                <label>Out and Back:</label>
                 <select id="out_and_back" name="out_and_back">
-                    <option value="">n/a</option>
+                    <option value="n/a">n/a</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                 </select>
@@ -82,7 +82,7 @@
             <div class="filter-section">
                 <label>Bathroom Available:</label>
                 <select id="bathroom" name="bathroom">
-                    <option value="">n/a</option>
+                    <option value="n/a">n/a</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                 </select>
@@ -91,7 +91,7 @@
             <div class="filter-section">
                 <label>Water Fountain Available:</label>
                 <select id="water_fountain" name="water_fountain">
-                    <option value="">n/a</option>
+                    <option value="n/a">n/a</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                 </select>
