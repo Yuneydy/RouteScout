@@ -100,25 +100,70 @@ nav ul {
 }
 
 /* Route Display */
+.route-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+}
 
-/* Container for all routes */
+/* Modal Content Box */
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+}
+
+/* Close Button */
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #000;
+  text-decoration: none;
+}
+
 .route-container {
   display: flex;
-  flex-wrap: wrap; /* Ensures the items wrap on smaller screens */
+  flex-wrap: wrap; 
   gap: 20px;
-  justify-content: center; /* Centers the route boxes */
+  justify-content: center; 
   padding: 20px;
-  background-color: #f9f9f9; /* Light background color */
+  background-color: #f9f9f9;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
+
 
 /* Individual route box */
 .route-box {
-  background-color: #ffffff; /* White background for contrast */
-  border: 1px solid #ddd; /* Subtle border */
-  border-radius: 10px; /* Rounded corners */
+  background-color: #ffffff;
+  border: 1px solid #ddd; 
+  border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
   padding: 20px;
-  width: 300px; /* Set a fixed width */
+  width: 300px;
   font-family: Arial, sans-serif;
   transition: transform 0.2s, box-shadow 0.2s; /* Smooth hover effects */
 }
@@ -127,6 +172,8 @@ nav ul {
 .route-box:hover {
   transform: translateY(-5px); /* Moves the box slightly up */
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+  background-color: #ffffff;
+  color:#355f39
 }
 
 /* Title (Route Name) */
@@ -137,31 +184,63 @@ nav ul {
   text-align: center;
 }
 
-/* Bold labels in details */
 .route-box p {
   font-size: 14px;
-  color: #555; /* Subtle text color */
-  line-height: 1.5; /* Better spacing */
+  color: #555;
+  line-height: 1.5;
 }
 
 .route-box p b {
-  color: #000; /* Bold labels stand out */
+  color: #000;
 }
 
 /* Responsive layout for smaller screens */
 @media (max-width: 768px) {
   .route-box {
-      width: 100%; /* Boxes take up full width on small screens */
+      width: 100%;
   }
 }
 
 .Beginner {
-  background-color: #95b389;
+  background-color: #d1e6c9;
 }
 .Intermediate {
-  background-color: #bc89a9;
+  background-color: #eacde0;
 }
 .Advanced {
+  background-color: #d8af89;
+}
+
+/* Legend container */
+.legend {
+  display: flex;
+  gap: 15px; /* Spacing between legend items */
+  justify-content: center; /* Centers the legend */
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Common styles for legend colors */
+.legend-color {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px; /* Space between the box and label */
+  border-radius: 3px; /* Slightly rounded corners */
+  border: 1px solid #ccc; /* Optional: Adds a border for clarity */
+}
+
+/* Specific difficulty colors */
+.legend-color.beginner {
+  background-color: #95b389;
+}
+
+.legend-color.intermediate {
+  background-color: #bc89a9;
+}
+
+.legend-color.advanced {
   background-color: #a8621f;
 }
 

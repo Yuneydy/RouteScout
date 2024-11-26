@@ -1,6 +1,12 @@
 import cs304dbi as dbi
 
 def get_all_routes(conn):
+    """
+    Retrieves all route information from the database, including the username of the user who added each route.
+    Returns:
+        A list of tuples, where each tuple represents a route and includes all fields from 
+        `route_info` and the `username` from the `user` table.
+    """
     curs = dbi.cursor(conn)
     sql = '''select *, user.username from route_info inner join user on route_info.addedBy = user.uid'''
     curs.execute(sql)
@@ -8,6 +14,13 @@ def get_all_routes(conn):
     return rows
 
 def get_user_routes(conn, user_id):
+    """
+    Retrieves all routes added by a specific user, including the username of the user.
+    Collects the user_id that will be retrieved
+    Returns:
+        A list of tuples, where each tuple represents a route added by the specified user
+        and includes all fields from `route_info` and the `username` from the `user` table.
+    """
     curs = dbi.cursor(conn)
     sql = '''select *, user.username from route_info inner join user on route_info.addedBy = user.uid where addedBy = %s'''
     curs.execute(sql, [user_id])
@@ -15,6 +28,11 @@ def get_user_routes(conn, user_id):
     return rows
 
 def get_routes(conn, name, level, mileage, start, finish, out, bath, water):
+    """
+    Retrieves routes that match specified filters.
+    Returns:
+        A list of tuples, where each tuple represents a route that matches the filters.
+    """
     curs = dbi.cursor(conn)
     sql = '''select * from route_info 
                 where

@@ -4,7 +4,12 @@
 
 
 <!-- Button to open the filter side pop-up -->
-<button class="open-filter-btn" onclick="toggleFilter()">Filters</button>
+<div class="legend">
+    <button class="open-filter-btn" onclick="toggleFilter()">Filters</button>
+    <p><span class="legend-color beginner"></span> Beginner</p>
+    <p><span class="legend-color intermediate"></span> Intermediate</p>
+    <p><span class="legend-color advanced"></span> Advanced</p>
+</div>
 
 <!-- Side Pop-Up for Filters -->
 <div id="filterSidebar" class="filter-sidebar">
@@ -28,6 +33,25 @@
                     overlay.style.display = "block"; // Show overlay when opening
                 }
             }
+            // Function to open a modal
+            function openModal(id) {
+                document.getElementById(id).style.display = "block";
+            }
+
+            // Function to close a modal
+            function closeModal(id) {
+                document.getElementById(id).style.display = "none";
+            }
+
+            // Close modal when clicking outside of it
+            window.onclick = function (event) {
+                const modals = document.getElementsByClassName('route-modal');
+                Array.from(modals).forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = "none";
+            }
+            });
+};
         </script>
         
         <!-- Filter Section -->
@@ -123,25 +147,36 @@
 
   </div>
 </div>
+
 <div class="route-container">
     {% for route in routes %}
-    <div class="route-box">
+    <div class="route-box {{route[5]}}" onclick="openModal('route-{{route[0]}}')">
         <h2>{{route[2]}}</h2>
-        <p><b>Route ID:</b> {{route[0]}}</p>
         <p><b>Uploaded By:</b> {{route[19]}}</p>
-        <p><b>Date/Time:</b> {{route[1]}}</p>
-        <p><b>Description:</b> {{route[3]}}</p>
-        <p><b>Level:</b> {{route[5]}}</p>
-        <p><b>Miles:</b> {{route[6]}}</p>
-        <p><b>Start:</b> {{route[8]}}</p>
-        <p><b>End:</b> {{route[10]}}</p>
-        <p><b>Out N Back?</b> {{route[11]}}</p>
-        <p><b>Bathroom?</b> {{route[12]}}</p>
-        <p><b>Where?</b> {{route[13]}}</p>
-        <p><b>Water Fountain?</b> {{route[14]}}</p>
-        <p><b>Where?</b> {{route[15]}}</p>
+    </div>
+
+    <!-- Modal for each route -->
+    <div id="route-{{route[0]}}" class="route-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('route-{{route[0]}}')">&times;</span>
+            <h2>{{route[2]}}</h2>
+            <p><b>Route ID:</b> {{route[0]}}</p>
+            <p><b>Uploaded By:</b> {{route[19]}}</p>
+            <p><b>Date/Time:</b> {{route[1]}}</p>
+            <p><b>Description:</b> {{route[3]}}</p>
+            <p><b>Level:</b> {{route[5]}}</p>
+            <p><b>Miles:</b> {{route[6]}}</p>
+            <p><b>Start:</b> {{route[8]}}</p>
+            <p><b>End:</b> {{route[10]}}</p>
+            <p><b>Out N Back?</b> {{route[11]}}</p>
+            <p><b>Bathroom?</b> {{route[12]}}</p>
+            <p><b>Where?</b> {{route[13]}}</p>
+            <p><b>Water Fountain?</b> {{route[14]}}</p>
+            <p><b>Where?</b> {{route[15]}}</p>
+        </div>
     </div>
     {% endfor %}
 </div>
+
 
 {% endblock %}

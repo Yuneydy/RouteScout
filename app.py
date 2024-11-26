@@ -187,8 +187,12 @@ def upload_route():
                flash('Your route has been submitted! Thank you!')
                return render_template('routeForm.html', uid=uid)
 
-@app.route('/routeSearch/<uid>/', methods=["GET", "POST"])
-def search_route(uid):
+#Search page for routes
+@app.route('/routeSearch/', methods=["GET", "POST"])
+def search_route():
+        uid = session.get('uid')
+        if (uid is None):
+          return redirect(url_for('intro'))
         conn = dbi.connect()
         if request.method == 'POST':
                 route = request.form.get("name")
