@@ -162,7 +162,7 @@ def upload_route():
        else: # Get data from the form
                conn = dbi.connect()
 
-
+               #route upload
                routeName = request.form.get("name")
                routeDescrip = request.form.get("notes")
                routeTcx = request.form.get("route_tcx")
@@ -183,6 +183,16 @@ def upload_route():
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
                curs.execute(query, (routeName, routeDescrip, routeTcx, levelRun, numMile, 
                              None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
+               
+               #updates profile page, adding one to the number of runs you have created
+               query_currentNumber = 'SELECT routes_created from user WHERE uid = %s'
+               curs.execute(query_currentNumber, uid)
+               row1 = curs.fetchone()
+               currentNumber = int(row1[0])
+               newNumber = currentNumber + 1
+               query_newMileage = 'UPDATE user SET routes_created = %s WHERE uid = %s'
+               curs.execute(query_newMileage, (newNumber, uid))
+
                conn.commit()
                flash('Your route has been submitted! Thank you!')
                return render_template('routeForm.html', uid=uid)
@@ -285,11 +295,11 @@ def ranRoute():
                curs.execute(query_rating, (uid, routeNum, routeRating, routeComment))
                # finding mileage of the run
                query_findMileage = 'SELECT mileage from route_info where routeID = %s'
-               curs.execute(query_findMileage, (routeNum))
+               curs.execute(query_findMileage, routeNum)
                row = curs.fetchone()
                routeMileage = row[0]
                query_currentMileage = 'SELECT overall_mileage from user where uid = %s'
-               curs.execute(query_currentMileage, (uid))
+               curs.execute(query_currentMileage, uid)
                row1 = curs.fetchone()
                currentM = float(row1[0])
                newMileage = currentM + routeMileage
