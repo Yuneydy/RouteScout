@@ -190,8 +190,8 @@ def upload_route():
                row1 = curs.fetchone()
                currentNumber = int(row1[0])
                newNumber = currentNumber + 1
-               query_newMileage = 'UPDATE user SET routes_created = %s WHERE uid = %s'
-               curs.execute(query_newMileage, (newNumber, uid))
+               query_newNumber = 'UPDATE user SET routes_created = %s WHERE uid = %s'
+               curs.execute(query_newNumber, (newNumber, uid))
 
                conn.commit()
                flash('Your route has been submitted! Thank you!')
