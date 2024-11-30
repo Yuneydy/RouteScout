@@ -270,17 +270,33 @@ def ranRoute():
        if request.method == "GET":
                return render_template('ranRoute.html')
        else:
+               #get info from form
                routeNum = request.form.get('route_ID')
                routeRating = request.form.get('rating') 
                routeComment = request.form.get('comment')
+               # make them integers
                num = int(routeNum)
                rating = int(routeRating)
+               # connect to databse
                conn = dbi.connect()
                curs = dbi.cursor(conn)
-               query = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
-               curs.execute(query, (uid, routeNum, routeRating, routeComment))
+               # inserting into route_rating table
+               query_rating = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
+               curs.execute(query_rating, (uid, routeNum, routeRating, routeComment))
+               # finding mileage of the run
+               query_findMileage = 'SELECT mileage from route_info where routeID = %s'
+               curs.execute(query_findMileage, (routeNum))
+               row = curs.fetchone()
+               routeMileage = row[0]
+               query_currentMileage = 'SELECT overall_mileage from user where uid = %s'
+               curs.execute(query_currentMileage, (uid))
+               row1 = curs.fetchone()
+               currentM = float(row1[0])
+               newMileage = currentM + routeMileage
+               query_newMileage = 'UPDATE user SET overall_mileage = %s WHERE uid = %s'
+               curs.execute(query_newMileage, (newMileage, uid))
                conn.commit()
-               flash('Your route review has been submitted! Thank you!')
+               flash('Your route review has been submitted and your overall mileage has been updated! Thank you!')
                return render_template('ranRoute.html')
 
       
