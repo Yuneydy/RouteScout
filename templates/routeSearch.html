@@ -173,6 +173,22 @@
             <p><b>Where?</b> {{route[13]}}</p>
             <p><b>Water Fountain?</b> {{route[14]}}</p>
             <p><b>Where?</b> {{route[15]}}</p>
+            <p><b>Ratings:</b></p>
+            <ul>
+                {% for rating in ratings %}
+                    {% if rating[2] == route[0] %}
+                    <li>Rating: {{ rating[3] }} | Comment: {{ rating[4] }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <p><b>Overall Rating:</b></p>
+            <ul>
+                {% for avgRating in avg_ratings %}
+                    {% if avgRating[0] == route[0] %}
+                    <li>Overall rating: {{ avgRating[1] }}/5</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         </div>
     </div>
     {% endfor %}

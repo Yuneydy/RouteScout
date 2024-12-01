@@ -216,10 +216,14 @@ def search_route():
 
                 routes = q.get_routes(conn, route, level, mile, startTown, endTown, outBack, bath, waterFount)
                 print(routes)
-                return render_template('routeSearch.html', routes=routes, uid=uid)
+                ratings = q.get_all_ratings(conn)
+                avg_ratings = q.get_avg_rating(conn)
+                return render_template('routeSearch.html', routes=routes, uid=uid, ratings=ratings, avg_ratings=avg_ratings)
         else:
                 routes = q.get_all_routes(conn)
-                return render_template('routeSearch.html', routes=routes, uid=uid)
+                ratings = q.get_all_ratings(conn)
+                avg_ratings = q.get_avg_rating(conn)
+                return render_template('routeSearch.html', routes=routes, uid=uid, ratings=ratings, avg_ratings=avg_ratings)
 
 # Shows user their own profile information
 @app.route('/profile/', methods=["GET", "POST"])
