@@ -25,15 +25,15 @@ def get_all_ratings(conn):
     rows = curs.fetchall()
     return rows
 
-def get_avg_rating(conn, route_id):
+def get_avg_rating(conn):
     """
     Retrieves overall average route rating using the database.
     Returns:
         A list of tuples, where each tuple represents a route and includes the average rating of the route
     """
     curs = dbi.cursor(conn)
-    sql = '''select avg(rating) from route_rating where routeID = %s'''
-    curs.execute(sql, [route_id])
+    sql = '''select distinct routeID, round(avg(rating), 1) from route_rating group by ratingID'''
+    curs.execute(sql)
     rows = curs.fetchall()
     return rows
 

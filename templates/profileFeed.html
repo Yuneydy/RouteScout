@@ -43,6 +43,14 @@
                 {% endif %}
             {% endfor %}
         </ul>
+        <p><b>Overall Rating:</b></p>
+        <ul>
+            {% for avgRating in avg_ratings %}
+                {% if avgRating[0] == route[0] %}
+                <li>Overall rating: {{ avgRating[1] }}/5</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
     </div>
     {% endfor %}
 </div>
