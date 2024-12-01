@@ -247,7 +247,49 @@ def profile():
        overallMileage = row['overall_mileage']
        averagePace = row['average_pace']
        routesCreated = row['routes_created']
-       return render_template('profile.html', username=username, pronouns=pronouns, level=level, overallMileage=overallMileage, averagePace=averagePace, routesCreated=routesCreated)
+       if request.method == 'GET':
+        return render_template(
+            'profile.html',
+            username=username,
+            pronouns=pronouns,
+            level=level,
+            overallMileage=overallMileage,
+            averagePace=averagePace,
+            routesCreated=routesCreated
+        )
+       
+       if request.method == 'POST':
+             action = request.form.get('submit')
+             if action == "update":
+                conn = dbi.connect()
+                curs = dbi.dict_cursor(conn)
+                newUserName = request.form.get('new-username')
+                newPronouns = request.form.get('new-pronouns')
+                newLevel = request.form.get('new-level')
+                newPace = request.form.get('new-pace')
+                updateUserQuery = ''' update user 
+                set username = %s, pronouns = %s, level = %s, average_pace = %s 
+                where uid = %s
+                '''
+                curs.execute(updateUserQuery, (newUserName, newPronouns, newLevel, newPace, uid))
+                conn.commit()
+                updateUserPassQuery = 'update userpass set username = %s where uid = %s'
+                curs.execute(updateUserPassQuery, (newUserName, uid))
+                conn.commit()
+                flash('Profile updated successfully')
+                return redirect(url_for('profile'))
+             else:
+                conn = dbi.connect()
+                curs = dbi.dict_cursor(conn)
+                deleteFromUser = 'delete from user where uid=%s'
+                curs.execute(deleteFromUser, [uid])
+                conn.commit()
+                deleteFromUserPass = 'delete from userpass where uid=%s'
+                curs.execute(deleteFromUserPass, [uid])
+                conn.commit()
+                flash('Account deleted successfully')
+                return redirect(url_for('intro'))
+                
 
 #Displays all routes or just the routes the user has created
 @app.route('/profileFeed/', methods=["GET", "POST"])

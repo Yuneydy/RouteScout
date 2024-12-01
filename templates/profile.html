@@ -14,4 +14,30 @@
 <p>number of routes you have created: {{routesCreated}}</p>
 </div>
 
+<h2>Update Your Information</h2>
+<form method="POST" action="{{ url_for('profile') }}">
+    <table>
+        <tr>
+            <td><label for="new-username">Username:</label></td>
+            <td><input id="new-username" name="new-username" type="text" value="{{ username }}" required></td> 
+        </tr>
+        <tr>
+            <td><label for="new-pronouns">Pronouns:</label></td>
+            <td><input id="new-pronouns" name="new-pronouns" type="text" value="{{ pronouns }}"></td>
+        </tr>
+        <tr>
+            <td><label for="new-level">Level:</label></td>
+            <td><input id="new-level" name="new-level" type="text" value="{{ level }}" required></td>
+        </tr>
+        <tr>
+            <td><label for="new-pace">Average Pace:</label></td>
+            <td><input id="new-pace" name="new-pace" type="text" value="{{ averagePace }}" required></td>
+        </tr>
+    </table>
+    <div>
+        <button type="submit" name="submit" value="update" class="btn btn-primary">Update Profile</button>
+        <button type="submit" name="submit" value="delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete your profile? This action cannot be undone.')">Delete Profile</button>
+    </div>
+</form>
+
 {% endblock %}
