@@ -312,6 +312,15 @@ nav ul {
     border-radius: 5px;
 }
 
+/*profile page*/
+.profile-info {
+  background-color: #c3dbcd;
+  border: 1px solid #ddd; 
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+}
+
 /* Animation to slide the sidebar in and out */
 .filter-sidebar.open {
     width: 350px;
@@ -356,3 +365,5 @@ input[type="submit"], button[type="submit"] {
   input[type="submit"]:hover, button[type="submit"]:hover {
     background-color: #45a049;
   }
+
+  
