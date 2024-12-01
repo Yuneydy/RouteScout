@@ -13,6 +13,31 @@ def get_all_routes(conn):
     rows = curs.fetchall()
     return rows
 
+def get_all_ratings(conn):
+    """
+    Retrieves all route ratings from the database, including the rating score out of 5 and the comment.
+    Returns:
+        A list of tuples, where each tuple represents all route ratings.
+    """
+    curs = dbi.cursor(conn)
+    sql = '''select * from route_rating'''
+    curs.execute(sql)
+    rows = curs.fetchall()
+    return rows
+
+def get_avg_rating(conn, route_id):
+    """
+    Retrieves overall average route rating using the database.
+    Returns:
+        A list of tuples, where each tuple represents a route and includes the average rating of the route
+    """
+    curs = dbi.cursor(conn)
+    sql = '''select avg(rating) from route_rating where routeID = %s'''
+    curs.execute(sql, [route_id])
+    rows = curs.fetchall()
+    return rows
+
+
 def get_user_routes(conn, user_id):
     """
     Retrieves all routes added by a specific user, including the username of the user.

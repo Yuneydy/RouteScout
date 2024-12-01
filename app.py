@@ -260,7 +260,10 @@ def profileFeed():
                routes = q.get_user_routes(conn, user_id)
        else:
                routes = q.get_all_routes(conn)
-       return render_template('profileFeed.html', routes=routes)
+        
+       ratings = q.get_all_ratings(conn)
+       print(ratings)
+       return render_template('profileFeed.html', routes=routes, ratings=ratings)
 
 # Gives informations about creators
 @app.route('/aboutUs/', methods=["GET", "POST"])
