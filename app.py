@@ -12,6 +12,7 @@ import bcrypt
 # import cs304dbi_sqlite3 as dbi
 import queries as q
 import secrets
+import os
 
 app.secret_key = 'your secret here'
 # replace that with a random key
@@ -19,6 +20,8 @@ app.secret_key = secrets.token_hex()
 
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
+
+API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 # Initial page titled RouteScout that gives you the option of login or sign up
 @app.route('/', methods=["POST", "GET"])
