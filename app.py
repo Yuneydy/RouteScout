@@ -20,6 +20,9 @@ app.secret_key = secrets.token_hex()
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
+#wwe make the folder in static where tcx files goes
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
 # Initial page titled RouteScout that gives you the option of login or sign up
 @app.route('/', methods=["POST", "GET"])
 def intro():
@@ -165,7 +168,7 @@ def upload_route():
                #route upload
                routeName = request.form.get("name")
                routeDescrip = request.form.get("notes")
-               routeTcx = request.form.get("route_tcx")
+               routeTcx = request.files.get("route_tcx")
                levelRun = request.form.get("difficulty")
                mile = request.form.get("distance")
                startTow = request.form.get("starting_town")
@@ -176,12 +179,20 @@ def upload_route():
                waterFount = request.form.get("water")
                fountDescrip = request.form.get("water_location")
                numMile = float(mile)
+
+               if routeTcx:
+                     nameOfFile = secure_filename(routeTcx.filename)
+                     path = os.path.join(app.config['UPLOAD_FOLDER'], nameOfFile)
+
+                     routeTcx.save(path)
+                     return f'Route file uploaded sucessfully: {nameOfFile}'
+
                curs = dbi.cursor(conn)
                query = '''INSERT INTO route_info(name, route_description, route_tcx, level, mileage, 
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
                 bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-               curs.execute(query, (routeName, routeDescrip, routeTcx, levelRun, numMile, 
+               curs.execute(query, (routeName, routeDescrip, None, levelRun, numMile, 
                              None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
                
                #updates profile page, adding one to the number of runs you have created
