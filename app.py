@@ -18,6 +18,8 @@ app.secret_key = 'your secret here'
 # replace that with a random key
 app.secret_key = secrets.token_hex()
 
+API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
