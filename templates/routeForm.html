@@ -22,8 +22,11 @@
         <textarea name="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
     </p>
 
+    <p>
     <label for="route_tcx">Route TCX:</label>
-        <textarea id="route_tcx" name="route_tcx"></textarea><br>
+    <input type="file" id="route_tcx" name="route_tcx" accept=".tcx" required><br>
+    </p>    
+    
     <p>
         <label for="distance">Distance in Miles (use decimal notation): </label>
         <input type="text" name="distance" id="distance" placeholder="Enter distance in miles" required 
