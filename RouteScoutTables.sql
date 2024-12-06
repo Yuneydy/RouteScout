@@ -23,6 +23,7 @@ create table route_info (
     name varchar(60),
     route_description varchar(300),
     route_tcx text,
+    embedded_map_link varchar(2048),
     level enum('Beginner', 'Intermediate', 'Advanced'),
     mileage float,
     starting_location point,

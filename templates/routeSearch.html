@@ -150,33 +150,42 @@
 
 <div class="route-container">
     {% for route in routes %}
-    <div class="route-box {{route[5]}}" onclick="openModal('route-{{route[0]}}')">
-        <h2>{{route[2]}}</h2>
-        <p><b>Uploaded By:</b> {{route[19]}}</p>
+    <div class="route-box {{route['level']}}" onclick="openModal('route-{{route['routeID']}}')">
+        <h2>{{route["name"]}}</h2>
+        <p><b>Uploaded By:</b> {{route["username"]}}</p>
     </div>
 
     <!-- Modal for each route -->
-    <div id="route-{{route[0]}}" class="route-modal">
+    <div id="route-{{route['routeID']}}" class="route-modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('route-{{route[0]}}')">&times;</span>
-            <h2>{{route[2]}}</h2>
-            <p><b>Route ID:</b> {{route[0]}}</p>
-            <p><b>Uploaded By:</b> {{route[19]}}</p>
-            <p><b>Date/Time:</b> {{route[1]}}</p>
-            <p><b>Description:</b> {{route[3]}}</p>
-            <p><b>Level:</b> {{route[5]}}</p>
-            <p><b>Miles:</b> {{route[6]}}</p>
-            <p><b>Start:</b> {{route[8]}}</p>
-            <p><b>End:</b> {{route[10]}}</p>
-            <p><b>Out N Back?</b> {{route[11]}}</p>
-            <p><b>Bathroom?</b> {{route[12]}}</p>
-            <p><b>Where?</b> {{route[13]}}</p>
-            <p><b>Water Fountain?</b> {{route[14]}}</p>
-            <p><b>Where?</b> {{route[15]}}</p>
+            <span class="close-btn" onclick="closeModal('route-{{route['routeID']}}')">&times;</span>
+            <h2>{{route["name"]}}</h2>
+            <div style="width: 100%; overflow: hidden; height: 300px;">
+                <iframe 
+                   src="{{route['embedded_map_link']}}"
+                   width="100%"
+                   height="600"
+                   frameborder="0"
+                   style="border:0; margin-top: -150px;">
+                </iframe>
+              </div>
+            <p><b>Route ID:</b> {{route["routeID"]}}</p>
+            <p><b>Uploaded By:</b> {{route["username"]}}</p>
+            <p><b>Date/Time:</b> {{route["created_at"]}}</p>
+            <p><b>Description:</b> {{route["route_description"]}}</p>
+            <p><b>Level:</b> {{route["level"]}}</p>
+            <p><b>Miles:</b> {{route["mileage"]}}</p>
+            <p><b>Start:</b> {{route["starting_town"]}}</p>
+            <p><b>End:</b> {{route["finishing_town"]}}</p>
+            <p><b>Out N Back?</b> {{route["out_and_back"]}}</p>
+            <p><b>Bathroom?</b> {{route["bathroom"]}}</p>
+            <p><b>Where?</b> {{route["bathroom_description"]}}</p>
+            <p><b>Water Fountain?</b> {{route["water_fountain"]}}</p>
+            <p><b>Where?</b> {{route["fountain_description"]}}</p>
             <p><b>Ratings:</b></p>
             <ul>
                 {% for rating in ratings %}
-                    {% if rating[2] == route[0] %}
+                    {% if rating[2] == route["routeID"] %}
                     <li>Rating: {{ rating[3] }} | Comment: {{ rating[4] }}</li>
                     {% endif %}
                 {% endfor %}
@@ -184,7 +193,7 @@
             <p><b>Overall Rating:</b></p>
             <ul>
                 {% for avgRating in avg_ratings %}
-                    {% if avgRating[0] == route[0] %}
+                    {% if avgRating[0] == route["routeID"] %}
                     <li>Overall rating: {{ avgRating[1] }}/5</li>
                     {% endif %}
                 {% endfor %}
