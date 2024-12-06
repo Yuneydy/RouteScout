@@ -160,14 +160,8 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('route-{{route['routeID']}}')">&times;</span>
             <h2>{{route["name"]}}</h2>
-            <div style="width: 100%; overflow: hidden; height: 300px;">
-                <iframe 
-                   src="{{route['embedded_map_link']}}"
-                   width="100%"
-                   height="600"
-                   frameborder="0"
-                   style="border:0; margin-top: -150px;">
-                </iframe>
+            <div class="modal-iframe-container">
+                <iframe src="{{route['embedded_map_link']}}"></iframe>
               </div>
             <p><b>Route ID:</b> {{route["routeID"]}}</p>
             <p><b>Uploaded By:</b> {{route["username"]}}</p>
