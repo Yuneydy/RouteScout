@@ -3,6 +3,7 @@ from flask import (Flask, render_template, make_response, url_for, request,
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 # one or the other of these. Defaults to MySQL (PyMySQL)
 # change comment characters to switch to SQLite
 
@@ -20,11 +21,14 @@ app.secret_key = secrets.token_hex()
 
 API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
+# Set up upload folder
+upload_path = os.path.join(os.getcwd(), 'static/uploads')
+if not os.path.exists(upload_path):
+    os.makedirs(upload_path)  # Create the directory if it doesn't exist
+app.config['UPLOAD_FOLDER'] = upload_path
+
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
-
-#wwe make the folder in static where tcx files goes
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # Initial page titled RouteScout that gives you the option of login or sign up
 @app.route('/', methods=["POST", "GET"])
@@ -186,12 +190,13 @@ def upload_route():
                if routeTcx:
                      nameOfFile = secure_filename(routeTcx.filename)
                      path = os.path.join(app.config['UPLOAD_FOLDER'], nameOfFile)
-
                      routeTcx.save(path)
-                     return f'Route file uploaded sucessfully: {nameOfFile}'
+                     app.logger.info(f'File saved at {path}')
+                     flash('Route file uploaded successfully: ' + nameOfFile)
 
+                     
                curs = dbi.cursor(conn)
-               query = '''INSERT INTO route_info(name, route_description, route_tcx, level, mileage, 
+               query = '''INSERT INTO route_info(name, route_description, route_tcx, embedded_map_link, level, mileage, 
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
                 bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
