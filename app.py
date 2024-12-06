@@ -176,6 +176,7 @@ def upload_route():
                routeName = request.form.get("name")
                routeDescrip = request.form.get("notes")
                routeTcx = request.files.get("route_tcx")
+               embeddedMap = request.form.get("embedded_map_link")
                levelRun = request.form.get("difficulty")
                mile = request.form.get("distance")
                startTow = request.form.get("starting_town")
@@ -199,8 +200,8 @@ def upload_route():
                query = '''INSERT INTO route_info(name, route_description, route_tcx, embedded_map_link, level, mileage, 
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
                 bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-               curs.execute(query, (routeName, routeDescrip, None, levelRun, numMile, 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+               curs.execute(query, (routeName, routeDescrip, None, embeddedMap, levelRun, numMile, 
                              None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
                
                #updates profile page, adding one to the number of runs you have created
