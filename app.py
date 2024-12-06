@@ -176,13 +176,6 @@ def upload_route():
                routeName = request.form.get("name")
                routeDescrip = request.form.get("notes")
                routeTcx = request.files.get("route_tcx")
-
-               if routeTcx:
-                app.logger.info(f'File received: {routeTcx.filename}')
-               else:
-                app.logger.info(f'Type of routeTcx: {type(routeTcx)}')
-                app.logger.warning('No file received in the request')
-
                levelRun = request.form.get("difficulty")
                mile = request.form.get("distance")
                startTow = request.form.get("starting_town")
@@ -203,11 +196,11 @@ def upload_route():
 
                      
                curs = dbi.cursor(conn)
-               query = '''INSERT INTO route_info(name, route_description, route_tcx, level, mileage, 
+               query = '''INSERT INTO route_info(name, route_description, route_tcx, embedded_map_link, level, mileage, 
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
                 bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-               curs.execute(query, (routeName, routeDescrip, nameOfFile if routeTcx else None, levelRun, numMile, 
+               curs.execute(query, (routeName, routeDescrip, None, levelRun, numMile, 
                              None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
                
                #updates profile page, adding one to the number of runs you have created
