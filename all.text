@@ -1,0 +1,1466 @@
+====================== app.py =====================
+from flask import (Flask, render_template, make_response, url_for, request,
+                   redirect, flash, session, send_from_directory, jsonify)
+from werkzeug.utils import secure_filename
+app = Flask(__name__)
+
+# one or the other of these. Defaults to MySQL (PyMySQL)
+# change comment characters to switch to SQLite
+
+import cs304dbi as dbi
+import bcrypt
+
+# import cs304dbi_sqlite3 as dbi
+import queries as q
+import secrets
+
+app.secret_key = 'your secret here'
+# replace that with a random key
+app.secret_key = secrets.token_hex()
+
+# This gets us better error messages for certain common request errors
+app.config['TRAP_BAD_REQUEST_ERRORS'] = True
+
+# Initial page titled RouteScout that gives you the option of login or sign up
+@app.route('/', methods=["POST", "GET"])
+def intro():
+       if request.method == "GET":
+              return render_template('intro.html')
+       else:
+              action = request.form.get('submit')
+              if action == "login":
+                return redirect(url_for('login'))
+              else:
+                return redirect(url_for('signUp'))
+
+# Allows users to login to the website with their username and login, if the
+# login is successful, the user is redirected to their profile feed page
+@app.route('/login/', methods=["POST", "GET"])
+def login():
+    if request.method == "GET":
+          return render_template('login.html')
+    else:
+        username = request.form.get('username')
+        passwd = request.form.get('password')
+        conn = dbi.connect()
+        curs = dbi.dict_cursor(conn)
+        curs.execute('''SELECT uid,hashed
+                        FROM userpass
+                        WHERE username = %s''',
+                        [username])
+        row = curs.fetchone()
+        if row is None:
+                # Same response as wrong password,
+                # so no information about what went wrong
+                flash('login incorrect. Try again or join')
+                return redirect( url_for('login'))
+        stored = row['hashed']
+        uid = row['uid']
+        print('LOGIN', username)
+        print('database has stored: {} {}'.format(stored,type(stored)))
+        print('form supplied passwd: {} {}'.format(passwd,type(passwd)))
+        hashed2 = bcrypt.hashpw(passwd.encode('utf-8'),
+                                stored.encode('utf-8'))
+        hashed2_str = hashed2.decode('utf-8')
+        print('rehash is: {} {}'.format(hashed2_str,type(hashed2_str)))
+        if hashed2_str == stored:
+                print('they match!')
+                flash('successfully logged in as '+username)
+                session['username'] = username
+                session['uid'] = row['uid']
+                session['logged_in'] = True
+                session['visits'] = 1
+                return redirect(url_for('profile', uid=session.get('uid')))
+        else:
+                flash('login incorrect. Try again or join')
+                return redirect( url_for('login'))
+
+# Allows users to create username and password, they will also fill out a form
+# where they input their pronouns, average time, overall mileage, and level
+@app.route('/join/', methods = ["GET", "POST"])
+def signUp():
+    if request.method == "GET":
+          return render_template('signup.html')
+    else:
+        username = request.form.get('username')
+        passwd1 = request.form.get('password1')
+        passwd2 = request.form.get('password2')
+        if passwd1 != passwd2:
+                flash('passwords do not match')
+                return redirect( url_for('index'))
+        hashed = bcrypt.hashpw(passwd1.encode('utf-8'),
+                                bcrypt.gensalt())
+        stored = hashed.decode('utf-8')
+        print('JOIN', username, passwd1, stored)
+        conn = dbi.connect()
+        curs = dbi.cursor(conn)
+        try:
+                curs.execute('''INSERT INTO userpass(uid,username,hashed)
+                                VALUES(null,%s,%s)''',
+                        [username, stored])
+                conn.commit()
+        except Exception as err:
+                flash('That username is taken: {}'.format(repr(err)))
+                return redirect(url_for('signUp'))
+        curs.execute('select last_insert_id()')
+        row = curs.fetchone()
+        uid = row[0]
+        flash('FYI, you were issued UID {}'.format(uid))
+        session['username'] = username
+        session['uid'] = uid
+        session['logged_in'] = True
+        session['visits'] = 1
+
+        pronouns = request.form.get('pronouns')
+        level = request.form.get('level')
+        overallMileage = request.form.get('overall_mileage')
+        avgPaceHour = request.form.get('average_pace_hour')
+        avgPaceMin = request.form.get('average_pace_min')
+        avgPaceOverall = avgPaceHour + avgPaceMin
+
+        conn = dbi.connect()
+        curs = dbi.cursor(conn)
+        insertUserQuery = 'INSERT into user (uid, username, pronouns, level, overall_mileage, average_pace, routes_created) VALUES (%s, %s, %s, %s, %s, %s, %s)'
+        try:
+                curs.execute(insertUserQuery, (uid, username, pronouns, level, overallMileage, avgPaceOverall, 0))
+                conn.commit()
+        except Exception as err:
+                print(f'Error inserting into user: {err}')
+                flash('Failed to create user profile')
+                return redirect(url_for('signUp'))
+        return redirect( url_for('profile', uid=uid))
+
+# Logs users out of the website and redirects them back to the route scout intro page
+# where they will have the choice to sign up or log in
+@app.route('/logout/', methods = ["GET", "POST"])
+def logout():
+   uid = session.get('uid')
+   if (uid is None):
+          return redirect(url_for('intro'))
+   if request.method == "GET":
+         return render_template('logout.html')
+   else:
+       if 'username' in session:
+               username = session['username']
+               session.pop('username')
+               session.pop('uid')
+               session.pop('logged_in')
+               flash('You are logged out')
+               return redirect(url_for('login'))
+       else:
+               flash('you are not logged in. Please login or join')
+               return redirect(url_for('intro') )
+
+
+# Allows users to upload their route
+@app.route('/upload_route/', methods=["GET", "POST"])
+def upload_route():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       if request.method == "GET":
+               return render_template('routeForm.html')
+       else: # Get data from the form
+               conn = dbi.connect()
+
+
+               routeName = request.form.get("name")
+               routeDescrip = request.form.get("notes")
+               routeTcx = request.form.get("route_tcx")
+               levelRun = request.form.get("difficulty")
+               mile = request.form.get("distance")
+               startTow = request.form.get("starting_town")
+               endTow = request.form.get("finishing_town")
+               outAndBack = request.form.get("outBack")
+               bathr = request.form.get("bathrooms")
+               bathDescrip = request.form.get("bathroom_location")
+               waterFount = request.form.get("water")
+               fountDescrip = request.form.get("water_location")
+               numMile = float(mile)
+               curs = dbi.cursor(conn)
+               query = '''INSERT INTO route_info(name, route_description, route_tcx, level, mileage, 
+                starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
+                bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+               curs.execute(query, (routeName, routeDescrip, routeTcx, levelRun, numMile, 
+                             None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
+               conn.commit()
+               flash('Your route has been submitted! Thank you!')
+               return render_template('routeForm.html', uid=uid)
+
+#Search page for routes
+@app.route('/routeSearch/', methods=["GET", "POST"])
+def search_route():
+        uid = session.get('uid')
+        if (uid is None):
+          return redirect(url_for('intro'))
+        conn = dbi.connect()
+        if request.method == 'POST':
+                route = request.form.get("name")
+                level = request.form.get("level")
+                mile = request.form.get("mileage")
+                startTown = request.form.get("starting_town")
+                endTown = request.form.get("finishing_town")
+                outBack = request.form.get("out_and_back")
+                bath = request.form.get("bathroom")
+                waterFount = request.form.get("water_fountain")
+
+                routes = q.get_routes(conn, route, level, mile, startTown, endTown, outBack, bath, waterFount)
+                print(routes)
+                return render_template('routeSearch.html', routes=routes, uid=uid)
+        else:
+                routes = q.get_all_routes(conn)
+                return render_template('routeSearch.html', routes=routes, uid=uid)
+
+# Shows user their own profile information
+@app.route('/profile/', methods=["GET", "POST"])
+def profile():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       conn = dbi.connect()
+       curs = dbi.dict_cursor(conn)
+       findUserNamequery = 'SELECT username from userpass where uid=%s'
+       curs.execute(findUserNamequery, uid)
+       row = curs.fetchone()
+       print(row)
+       username = row['username']
+       findUserInfoquery = 'select * from user where uid=%s'
+       curs.execute(findUserInfoquery, uid)
+       row = curs.fetchone()
+       print(row)
+       pronouns = row['pronouns']
+       level = row['level']
+       overallMileage = row['overall_mileage']
+       averagePace = row['average_pace']
+       routesCreated = row['routes_created']
+       return render_template('profile.html', username=username, pronouns=pronouns, level=level, overallMileage=overallMileage, averagePace=averagePace, routesCreated=routesCreated)
+
+#Displays all routes or just the routes the user has created
+@app.route('/profileFeed/', methods=["GET", "POST"])
+def profileFeed():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       conn = dbi.connect()
+       filter_option = request.args.get("filter")
+
+
+       if filter_option == "user":
+               user_id = uid
+               routes = q.get_user_routes(conn, user_id)
+       else:
+               routes = q.get_all_routes(conn)
+       return render_template('profileFeed.html', routes=routes)
+
+# Gives informations about creators
+@app.route('/aboutUs/', methods=["GET", "POST"])
+def aboutUs():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       return render_template('aboutUs.html')
+
+# Allows users to say which routes they have completed and give them a rating
+# and a comment
+@app.route('/ranRoute/', methods=["GET", "POST"])
+def ranRoute():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       if request.method == "GET":
+               return render_template('ranRoute.html')
+       else:
+               routeNum = request.form.get('route_ID')
+               routeRating = request.form.get('rating') 
+               routeComment = request.form.get('comment')
+               num = int(routeNum)
+               rating = int(routeRating)
+               conn = dbi.connect()
+               curs = dbi.cursor(conn)
+               query = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
+               curs.execute(query, (uid, routeNum, routeRating, routeComment))
+               conn.commit()
+               flash('Your route review has been submitted! Thank you!')
+               return render_template('ranRoute.html')
+
+      
+    
+# This route displays all the data from the submitted form onto the rendered page
+# It's unlikely you will ever need anything like this in your own applications, so
+# you should probably delete this handler
+
+if __name__ == '__main__':
+    import sys, os
+    if len(sys.argv) > 1:
+        # arg, if any, is the desired port number
+        port = int(sys.argv[1])
+        assert(port>1024)
+    else:
+        port = os.getuid()
+    # set this local variable to 'wmdb' or your personal or team db
+    db_to_use = 'routesct_db' 
+    print(f'will connect to {db_to_use}')
+    dbi.conf(db_to_use)
+    app.debug = True
+    app.run('0.0.0.0',port)
+====================== queries.py =====================
+import cs304dbi as dbi
+
+def get_all_routes(conn):
+    """
+    Retrieves all route information from the database, including the username of the user who added each route.
+    Returns:
+        A list of tuples, where each tuple represents a route and includes all fields from 
+        `route_info` and the `username` from the `user` table.
+    """
+    curs = dbi.cursor(conn)
+    sql = '''select *, user.username from route_info inner join user on route_info.addedBy = user.uid'''
+    curs.execute(sql)
+    rows = curs.fetchall()
+    return rows
+
+def get_user_routes(conn, user_id):
+    """
+    Retrieves all routes added by a specific user, including the username of the user.
+    Collects the user_id that will be retrieved
+    Returns:
+        A list of tuples, where each tuple represents a route added by the specified user
+        and includes all fields from `route_info` and the `username` from the `user` table.
+    """
+    curs = dbi.cursor(conn)
+    sql = '''select *, user.username from route_info inner join user on route_info.addedBy = user.uid where addedBy = %s'''
+    curs.execute(sql, [user_id])
+    rows = curs.fetchall()
+    return rows
+
+def get_routes(conn, name, level, mileage, start, finish, out, bath, water):
+    """
+    Retrieves routes that match specified filters.
+    Returns:
+        A list of tuples, where each tuple represents a route that matches the filters.
+    """
+    curs = dbi.cursor(conn)
+    sql = '''select * from route_info 
+                where
+                '''
+    filters = []
+    if name != None:
+        sql += 'name like %s and '
+        filters.append('%'+ name + '%')
+        print(name)
+    if level != 'Any':
+        sql += 'level like %s and '
+        filters.append(level)
+    if mileage != 25:
+        sql += 'mileage <= %s and '
+        filters.append(mileage)
+    if start != 'Any':
+        sql += 'starting_town like %s and '
+        filters.append(start)
+    if finish != 'Any':
+        sql += 'finishing_town like %s and '
+        filters.append(finish)
+    if out != 'n/a':
+        sql += 'out_and_back like %s and '
+        filters.append(out)
+    if bath != 'n/a':
+        sql += 'bathroom like %s and '
+        filters.append(bath)
+    if water != 'n/a':
+        sql += 'water_fountain like %s and '
+        filters.append(water)
+    print('before:' + sql)
+    sql = sql.removesuffix('and ')
+    print('after:' + sql)
+    curs.execute(sql,filters)
+    
+    info = curs.fetchall()
+    return info
+====================== RouteScoutTables.sql =====================
+--Creates tables for RouteScout database
+
+drop table if exists routes_ran;
+drop table if exists route_rating;
+drop table if exists route_info;
+drop table if exists user;
+
+create table user (
+    uid integer not null,
+    created_at timestamp,
+    username varchar(50),
+    pronouns varchar(20),
+    level enum('Beginner', 'Intermediate', 'Advanced'),
+    overall_mileage integer,
+    average_pace char(4),
+    routes_created integer,
+    primary key (uid)
+);
+
+create table route_info (
+    routeID integer not null auto_increment,
+    created_at timestamp,
+    name varchar(60),
+    route_description varchar(300),
+    route_tcx text,
+    level enum('Beginner', 'Intermediate', 'Advanced'),
+    mileage float,
+    starting_location point,
+    starting_town enum('Newton', 'Cambridge', 'Wellesley', 'Boston', 'Framingham', 'Natick', 'Waltham', 'Somerville', 'Brookline', 'Medford', 'Malden', 'Revere'),
+    finishing_location point,
+    finishing_town enum('Newton', 'Cambridge', 'Wellesley', 'Boston', 'Framingham', 'Natick', 'Waltham', 'Somerville', 'Brookline', 'Medford', 'Malden', 'Revere'),
+    out_and_back enum('yes', 'no'),
+    bathroom enum('yes', 'no'),
+    bathroom_description varchar(200),
+    water_fountain enum('yes','no'),
+    fountain_description varchar(200),
+    addedBy integer,
+    primary key (routeID),
+    foreign key (addedBy) references user(uid)
+);
+
+create table routes_ran (
+    routeID integer not null auto_increment,
+    uid integer,
+    route_time_stamp timestamp,
+    primary key(routeID, route_time_stamp),
+    foreign key (uid) references user(uid),
+    foreign key (routeID) references route_info(routeID)
+);
+
+create table route_rating (
+    ratingID integer not null auto_increment,
+    uid integer,
+    routeID integer,
+    rating integer,
+    comment text,
+    primary key (ratingID),
+    foreign key (routeID) references route_info(routeID),
+    foreign key (uid) references user(uid)
+);
+====================== SampleData.sql =====================
+use routesct_db;
+
+-- populating the user table
+insert into user(username, password, pronouns, level, overall_mileage, average_pace, routes_created) 
+values ('mhansen', 'iheartroutescout', 'she/her', 'Beginner', 0, 0840, 0);
+
+insert into user(username, password, pronouns, level, overall_mileage, average_pace, routes_created) 
+values ('nsobski', 'helloroutescout', 'she/her', 'Intermediate', 0, 0830, 1);
+
+insert into user (username, password, pronouns, level, overall_mileage, average_pace, routes_created) 
+values ('mluheda', 'r0ute$cout!', 'she/her', 'Intermediate', 0, 0930, 0);
+
+insert into user (username, password, pronouns, level, overall_mileage, average_pace, routes_created) 
+values ('yparedes', 'rootscoot!', 'she/her', 'Beginner', 0, 1500, 0);
+
+-- populating the route_info table
+insert into route_info(name, route_description, route_tcx, level, mileage, starting_location, starting_town,
+finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description,
+addedBy) values ('First Route', 'Run like your life depends on it on our first ever recorded route!', 'first_run.gpx',
+'Beginner', 0, point(42.28929, 71.31742), 'Wellesley', point(42.29220, 71.30742), 'Wellesley', 'yes', 'yes', 'Wellesley Campus Center',
+'yes', 'Wellesley Campus Center', 8);
+
+insert into route_info(name, route_description, route_tcx, level, mileage, starting_location, starting_town,
+finishing_location, finishing_town, out_and_back, bathroom, bathroom_description, water_fountain, fountain_description,
+addedBy) values ('Bread and Butter', 'I love Pond Road', 'pond_rd_loop.gpx', 'Intermediate', 3, point(42.28929, 71.31742), 'Wellesley', 
+point(42.29220, 71.30742), 'Wellesley', 'yes', 'no', 'None','no', 'None', 9);
+====================== templates/aboutUs.html =====================
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<h1>Get to know the team behind RouteScout!</h1>
+<div class="about">
+<div><img class="aboutPic" src="/static/placeholder.svg" alt="One of our awesome creators"> 
+       <h3>Nicole Sobski</h3>
+       <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet tincidunt mi. Aenean vitae volutpat ex. 
+        Proin auctor velit sem, in bibendum arcu vestibulum ut. Curabitur leo odio, faucibus quis erat vel, consectetur accumsan nulla.</p> 
+</div>
+
+<div><img class="aboutPic" src="/static/placeholder.svg" alt="One of our awesome creators"> 
+    <h3>Yuneydy Paredes</h3>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet tincidunt mi. Aenean vitae volutpat ex. 
+     Proin auctor velit sem, in bibendum arcu vestibulum ut. Curabitur leo odio, faucibus quis erat vel, consectetur accumsan nulla.</p> 
+</div>
+
+<div><img class="aboutPic" src="/static/placeholder.svg" alt="One of our awesome creators"> 
+    <h3>Maya Lu-Heda</h3>
+    <p> I'm Maya Lu-Heda and in the Green Class of 20205. I've been running throughout college and just ran my first Half Marathon. 
+     I'm excited to build this app and find new, exciting routes in the area!</p> 
+</div>
+
+<div><img class="aboutPic" src="/static/placeholder.svg" alt="One of our awesome creators"> 
+    <h3>Madeleine Hansen</h3>
+    <p>My name is Madeleine Hansen and I am class of 2026! I am a Computer Science and Psychology double major. 
+        I am a beginner runner excited to keep running in Boston!</p> 
+</div>
+
+</div>
+{% endblock %}
+====================== templates/base.html =====================
+<!doctype html>
+<html lang='en'>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <meta charset='utf-8'>
+    <!-- for mobile-friendly pages -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=author content="">
+    <title>{{ page_title }}</title>
+    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
+    {% block head_stuff %} {% endblock %}
+</head>
+<body>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div id="messages">
+  {% for msg in messages %}
+  <p>{{msg}}</p>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+            
+{% block nav %}
+<nav>
+  <ul>
+    <li><a href="{{ url_for('profileFeed') }}">Profile Feed</a></li>
+    <li><a href="{{ url_for('search_route') }}">Search Routes</a></li>
+    <li><a href="{{ url_for('aboutUs') }}">About Creators</a></li>
+    <li class="dropdown">
+      <a href="javascript:void(0)" class="dropbtn">Profile Options</a>
+      <ul class="dropdown-content">
+        <li><a href="{{ url_for('profile') }}">My Profile</a></li>
+        <li><a href="{{ url_for('upload_route') }}">Upload Route</a></li>
+        <li><a href="{{ url_for('ranRoute') }}">I Ran a Route!</a></li>
+        <li id="logout"><a href="{{ url_for('logout') }}">Log Out</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+{% endblock %}
+
+{% block main_content %}
+<h1>Welcome!</h1>
+{% endblock %}
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  {% block end_scripts %}
+  {% endblock %}
+  
+</body>
+</html>
+
+====================== templates/intro.html =====================
+
+<!doctype html>
+<html lang='en'>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <meta charset='utf-8'>
+    <!-- for mobile-friendly pages -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=author content="">
+    <title>{{ page_title }}</title>
+    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
+    {% block head_stuff %} {% endblock %}
+</head>
+<body>
+
+<h1>Welcome to RouteScout!</h1>
+
+<form method=POST action="{{url_for('intro')}}">
+    <input type="submit" name="submit" value="login">
+    <input type="submit" name="submit" value="signup">
+  </form>
+
+</body>
+</html>
+====================== templates/login.html =====================
+<!doctype html>
+<html lang='en'>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <meta charset='utf-8'>
+    <!-- for mobile-friendly pages -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=author content="">
+    <title>{{ page_title }}</title>
+    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
+    {% block head_stuff %} {% endblock %}
+</head>
+<body>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div id="messages">
+    {% for msg in messages %}
+    <p>{{msg}}</p>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<form id="loginform" action="/login/" method="post">
+    <h2>Login</h2>
+    <p><label>Username: <input type="text" name="username" required pattern="^\w+$"></label></p>
+    <p><label>Password: <input type="password" name="password" required></label></p>
+    <p><button type="submit">Submit</button></p>
+</form>
+
+<a href="{{url_for('signUp')}}" target="_self">
+    <button>Sign Up!</button>
+</a>
+</body>
+</html>
+====================== templates/logout.html =====================
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<form method="post" action="{{url_for('logout')}}">
+    <button type="submit">Logout</button>
+</form>
+
+{% endblock %}
+====================== templates/main.html =====================
+{% extends "base.html" %}
+
+{% block main_content %}
+<h1>Hello!</h1>
+
+<p>For a greeting by name, visit this <a href="{{ url_for('upload_route') }}">greeting</a> page.</p>
+
+{% endblock %}
+
+====================== templates/profileFeed.html =====================
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<h1>All Running Routes</h1>
+
+<div class="filter-form">
+    <form method="GET" action="{{url_for('profileFeed')}}">
+    <label>
+        <input required type="radio" name="filter" value="all">
+        Show All Runs
+    </label>
+    <label>
+        <input required type="radio" name="filter" value="user">
+        Show My Runs
+    </label>
+    <button type="submit">Filter Runs</button>
+</form>
+</div>
+
+<div class="route-container">
+    {% for route in routes %}
+    <div class="route-box">
+        <h2>{{route[2]}}</h2>
+        <p><b>Route ID:</b> {{route[0]}}</p>
+        <p><b>Uploaded By:</b> {{route[19]}}</p>
+        <p><b>Date/Time:</b> {{route[1]}}</p>
+        <p><b>Description:</b> {{route[3]}}</p>
+        <p><b>Level:</b> {{route[5]}}</p>
+        <p><b>Miles:</b> {{route[6]}}</p>
+        <p><b>Start:</b> {{route[8]}}</p>
+        <p><b>End:</b> {{route[10]}}</p>
+        <p><b>Out N Back?</b> {{route[11]}}</p>
+        <p><b>Bathroom?</b> {{route[12]}}</p>
+        <p><b>Where?</b> {{route[13]}}</p>
+        <p><b>Water Fountain?</b> {{route[14]}}</p>
+        <p><b>Where?</b> {{route[15]}}</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+====================== templates/profile.html =====================
+{% extends "base.html" %}
+
+{% block main_content %}
+
+
+<h1>Your profile</h1>
+
+<p>Your username is {{username}}</p>
+<p>Your pronouns are {{pronouns}}</p>
+<p>Your level is {{level}}</p>
+<p>Your overall mileage is {{overallMileage}}</p>
+<p>Your average pace is {{averagePace}}</p>
+<p>The amount of routes you have created: {{routesCreated}}</p>
+{% endblock %}
+
+====================== templates/ranRoute.html =====================
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<h1>Route Rating Form:</h1>
+
+<form method="post" action="{{url_for('ranRoute')}}">
+    <p><label>What Route Number did you run?:
+        <input required type="text" name="route_ID">
+    </label>
+    
+    <p><label>What would you rate this run?
+        <select required name="rating">
+            <option value="">choose one</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+        </select>
+    </label>
+
+    <p><label>Do you have any comments about the route you ran?</label></p>
+    <textarea id="comment" name="comment" rows="5" cols="190"></textarea>
+    <p><input type="submit"></p>
+</form>
+
+
+{% endblock %}
+====================== templates/routeForm.html =====================
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Route</title>
+</head>
+<body>
+    <h1>Upload Details About Your Running Route</h1>
+
+<form method="post" action="{{url_for('upload_route')}}">
+    <p>
+        <label for="name">Route Name: </label>
+        <input type="text" name="name" id="name" required>
+    </p>
+    
+    <p>
+        <label for="notes">Route Description, Notes or Tips: </label>
+        <textarea name="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
+    </p>
+
+    <label for="route_tcx">Route TCX:</label>
+        <textarea id="route_tcx" name="route_tcx"></textarea><br>
+    <p>
+        <label for="distance">Distance (miles): </label>
+        <input type="number" name="distance" id="distance" step="0.01" placeholder="Enter distance in miles" required>
+    </p>    
+
+    <p>
+        <label for="location">Starting location </label>
+        <select name="starting_town" id="starting_town">
+            <option value="Newton">Newton</option>
+            <option value="Cambridge">Cambridge</option>
+            <option value="Wellesley">Wellesley</option>
+            <option value="Framingham">Framingham</option>
+            <option value="Natick">Natick</option>
+            <option value="Waltham">Waltham</option>
+            <option value="Boston">Boston</option>
+            <option value="Somerville">Somerville</option>
+            <option value="Brookline">Brookline</option>
+            <option value="Medford">Medford</option>
+            <option value="Malden">Malden</option>
+            <option value="Revere">Revere</option>
+        </select>
+    </p>
+
+    <p>
+        <label for="location">Ending </label>
+        <select name="finishing_town" id="finishing_town">
+            <option value="Newton">Newton</option>
+            <option value="Cambridge">Cambridge</option>
+            <option value="Wellesley">Wellesley</option>
+            <option value="Framingham">Framingham</option>
+            <option value="Natick">Natick</option>
+            <option value="Waltham">Waltham</option>
+            <option value="Boston">Boston</option>
+            <option value="Somerville">Somerville</option>
+            <option value="Brookline">Brookline</option>
+            <option value="Medford">Medford</option>
+            <option value="Malden">Malden</option>
+            <option value="Revere">Revere</option>
+        </select>
+    </p>
+
+
+    
+    
+    <p>
+        <label for="location">Location: </label>
+        <input type="text" name="location" id="location" placeholder="e.g., Wellesley" required>
+    </p>
+    
+    <p>
+        <label for="outBack">Was it out and back? </label>
+        <input type="radio" name="outBack" value="yes" id="outBack_yes">
+        <label for="outBack_yes">Yes</label>
+        
+        <input type="radio" name="outBack" value="no" id="outBack_no">
+        <label for="outBack_no">No</label>
+
+    </p>
+    
+    <p>
+        <label for="difficulty">Difficulty Level: </label>
+        <select name="difficulty" id="difficulty">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+        </select>
+    </p>
+    
+    
+    <p>
+        <label for="bathrooms">Were there bathrooms along the route? </label>
+        <input type="radio" name="bathrooms" value="yes" id="bathrooms_yes">
+        <label for="bathrooms_yes">Yes</label>
+        
+        <input type="radio" name="bathrooms" value="no" id="bathrooms_no">
+        <label for="bathrooms_no">No</label>
+
+    </p>
+    
+    <p>
+        <label for="bathroom_location">Bathroom Locations </label>
+        <textarea name="bathroom_location" id="bathroom_location" rows="3" placeholder="e.g., Bathroom at Sudbury Path Trailhead"></textarea>
+    </p>
+    
+    <p>
+        <label for="water">Were there water stations along the route? </label>
+        <input type="radio" name="water" value="yes" id="water_yes">
+        <label for="water_yes">Yes</label>
+        
+        <input type="radio" name="water" value="no" id="water_no">
+        <label for="water_no">No</label>
+    </p>
+
+    <p>
+        <label for="water_location">Water Locations </label>
+        <textarea name="water_location" id="water_location" rows="3" placeholder="e.g., Water fountain by MIT Boathouse"></textarea>
+    </p>
+
+
+    
+</body>
+
+
+    <button type="submit">Submit</button>
+</form>
+
+
+{% endblock %}
+
+====================== templates/routeSearch.html =====================
+{% extends "base.html" %}
+
+{% block main_content %}
+
+
+<!-- Button to open the filter side pop-up -->
+<div class="legend">
+    <button class="open-filter-btn" onclick="toggleFilter()">Filters</button>
+    <p><span class="legend-color beginner"></span> Beginner</p>
+    <p><span class="legend-color intermediate"></span> Intermediate</p>
+    <p><span class="legend-color advanced"></span> Advanced</p>
+</div>
+
+<!-- Side Pop-Up for Filters -->
+<div id="filterSidebar" class="filter-sidebar">
+  <div class="filter-sidebar-content">
+    <span class="close-btn" onclick="toggleFilter()">&times;</span>
+
+    <form id="search-filters" method="post" action="{{ url_for('search_route') }}">     
+        <script> 
+            function updateMileageValue(value) {
+                document.getElementById('mileageValue').textContent = value;
+            }
+            function toggleFilter() {
+                var sidebar = document.getElementById("filterSidebar");
+                var overlay = document.getElementById("overlay");
+
+                if (sidebar.classList.contains("open")) {
+                    sidebar.classList.remove("open");
+                    overlay.style.display = "none";  // Hide overlay when closing
+                } else {
+                    sidebar.classList.add("open");
+                    overlay.style.display = "block"; // Show overlay when opening
+                }
+            }
+            // Function to open a modal
+            function openModal(id) {
+                document.getElementById(id).style.display = "block";
+            }
+
+            // Function to close a modal
+            function closeModal(id) {
+                document.getElementById(id).style.display = "none";
+            }
+
+            // Close modal when clicking outside of it
+            window.onclick = function (event) {
+                const modals = document.getElementsByClassName('route-modal');
+                Array.from(modals).forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = "none";
+            }
+            });
+};
+        </script>
+        
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <label>Route Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter route name">
+        </div>
+
+        <div class="filter-section">
+            <label for="level">Difficulty Level:</label>
+            <select id="level" name="level">
+                <option value="Any">Any</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Maximum Mileage:</label>
+            <input type="range" id="mileage" name="mileage" min="0" max="25" value="25" oninput="updateMileageValue(this.value)">
+            <span id="mileageValue">25</span> miles
+        </div>
+
+        <div class="filter-section">
+            <label>Starting Town:</label>
+            <select id="starting_town" name="starting_town">
+                <option value="Any">Any</option>
+                <option value="Newton">Newton</option>
+                <option value="Cambridge">Cambridge</option>
+                <option value="Wellesley">Wellesley</option>
+                <option value="Boston">Boston</option>
+                <option value="Framingham">Framingham</option>
+                <option value="Natick">Natick</option>
+                <option value="Waltham">Waltham</option>
+                <option value="Somerville">Somerville</option>
+                <option value="Brookline">Brookline</option>
+                <option value="Medford">Medford</option>
+                <option value="Malden">Malden</option>
+                <option value="Revere">Revere</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Finishing Town:</label>
+            <select id="finishing_town" name="finishing_town">
+                <option value="Any">Any</option>
+                <option value="Newton">Newton</option>
+                <option value="Cambridge">Cambridge</option>
+                <option value="Wellesley">Wellesley</option>
+                <option value="Boston">Boston</option>
+                <option value="Framingham">Framingham</option>
+                <option value="Natick">Natick</option>
+                <option value="Waltham">Waltham</option>
+                <option value="Somerville">Somerville</option>
+                <option value="Brookline">Brookline</option>
+                <option value="Medford">Medford</option>
+                <option value="Malden">Malden</option>
+                <option value="Revere">Revere</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Out and Back:</label>
+            <select id="out_and_back" name="out_and_back">
+                <option value="n/a">n/a</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Bathroom Available:</label>
+            <select id="bathroom" name="bathroom">
+                <option value="n/a">n/a</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label>Water Fountain Available:</label>
+            <select id="water_fountain" name="water_fountain">
+                <option value="n/a">n/a</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+
+        <button type="submit">Search</button>
+    </form>
+
+
+  </div>
+</div>
+
+<div class="route-container">
+    {% for route in routes %}
+    <div class="route-box {{route[5]}}" onclick="openModal('route-{{route[0]}}')">
+        <h2>{{route[2]}}</h2>
+        <p><b>Uploaded By:</b> {{route[19]}}</p>
+    </div>
+
+    <!-- Modal for each route -->
+    <div id="route-{{route[0]}}" class="route-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('route-{{route[0]}}')">&times;</span>
+            <h2>{{route[2]}}</h2>
+            <p><b>Route ID:</b> {{route[0]}}</p>
+            <p><b>Uploaded By:</b> {{route[19]}}</p>
+            <p><b>Date/Time:</b> {{route[1]}}</p>
+            <p><b>Description:</b> {{route[3]}}</p>
+            <p><b>Level:</b> {{route[5]}}</p>
+            <p><b>Miles:</b> {{route[6]}}</p>
+            <p><b>Start:</b> {{route[8]}}</p>
+            <p><b>End:</b> {{route[10]}}</p>
+            <p><b>Out N Back?</b> {{route[11]}}</p>
+            <p><b>Bathroom?</b> {{route[12]}}</p>
+            <p><b>Where?</b> {{route[13]}}</p>
+            <p><b>Water Fountain?</b> {{route[14]}}</p>
+            <p><b>Where?</b> {{route[15]}}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock %}
+====================== templates/signup.html =====================
+<!doctype html>
+<html lang='en'>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <meta charset='utf-8'>
+    <!-- for mobile-friendly pages -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=author content="">
+    <title>{{ page_title }}</title>
+    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
+    {% block head_stuff %} {% endblock %}
+</head>
+<body>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div id="messages">
+  {% for msg in messages %}
+  <p>{{msg}}</p>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<form id="joinform" action="/join/" method="post">
+    <h2>Join</h2>
+    <p><label><input type="text" name="username" required pattern="^\w+$"> Username</label></p>
+    <p><label><input type="password" name="password1" required> Password </label></p>
+    <p><label><input type="password" name="password2" required> Password again </label></p>
+
+    <p><label><input type="text" name="pronouns">Pronouns</label></p>
+    <p><label for="level">What's your level?</label></p>
+
+    <select name="level" id="level">
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate">Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+
+    <p><label>What is your current overall mileage?</label><input type="text" name="overall_mileage"></p>
+    <p><label>What is your current average pace:</label><input type="text" name="average_pace_hour">:<input type="text" name="average_pace_min"></p>
+    
+    <p><button type="submit">Submit</button></p>
+</form>
+
+<a href="{{url_for('login')}}" target="_self">
+    <button>Back to Login</button>
+</a>
+
+
+</body>
+</html>
+====================== static/style.css =====================
+/* the --color-header and others are CSS variables, which we access later. 
+*/
+
+HTML {
+    --color-header: #ccddd3;  /* color for H1-H6 and others. was deepskyblue but poor contrast. */
+    --color-hilite: #b50000;  /* was red, but this avoids WAVE contrast errors */ 
+    --color-focus: #92ab9c;
+    --font-family: "Varela Round", sans-serif;
+    font-family: var(--font-family)
+}
+
+/* For flashed messages; make them stand out using red and italics */
+#messages {
+    color: var(--color-hilite);
+    font-style: italic;
+}
+
+
+h1 {
+    font-size: 200%;
+    color: var(--color-header);
+}
+
+h2, h3 {
+    color: var(--color-header);
+}
+
+/* NAV BAR */
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #355f39; /* Dark background */
+  }
+  
+  nav ul li {
+    position: relative;
+  }
+  
+  nav ul li a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  nav ul li a:hover {
+    background-color: #699369;
+  }
+  
+  /* Dropdown styles */
+  .dropdown .dropbtn {
+    cursor: pointer;
+  }
+  
+  .dropdown-content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    background-color: #355f39;
+    min-width: 200px; /* Adjust width */
+    z-index: 1; /* Bring dropdown above other content */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .dropdown-content li {
+    display: block;
+  }
+  
+  .dropdown-content li a {
+    padding: 12px 16px;
+  }
+  
+  .dropdown-content li a:hover {
+    background-color: #699369; /* Highlight on hover */
+    cursor: pointer;
+  }
+  
+  /* Show dropdown on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+#logout {
+    background-color: #b50000;
+}
+
+/* ABOUT PAGE */
+.aboutPic {
+    border-radius: 20px;
+    width: 300px;
+    height: 300px;
+}
+
+.about {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+}
+
+/* Route Display */
+.route-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+}
+
+/* Modal Content Box */
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+}
+
+/* Close Button */
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #000;
+  text-decoration: none;
+}
+
+.route-container {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 20px;
+  justify-content: center; 
+  padding: 20px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+
+/* Individual route box */
+.route-box {
+  background-color: #ffffff;
+  border: 1px solid #ddd; 
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+  padding: 20px;
+  width: 300px;
+  font-family: Arial, sans-serif;
+  transition: transform 0.2s, box-shadow 0.2s; /* Smooth hover effects */
+}
+
+/* Hover effect on route boxes */
+.route-box:hover {
+  transform: translateY(-5px); /* Moves the box slightly up */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+  background-color: #ffffff;
+  color:#355f39
+}
+
+/* Title (Route Name) */
+.route-box h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333; /* Darker text for better readability */
+  text-align: center;
+}
+
+.route-box p {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.route-box p b {
+  color: #000;
+}
+
+/* Responsive layout for smaller screens */
+@media (max-width: 768px) {
+  .route-box {
+      width: 100%;
+  }
+}
+
+.Beginner {
+  background-color: #d1e6c9;
+}
+.Intermediate {
+  background-color: #eacde0;
+}
+.Advanced {
+  background-color: #d8af89;
+}
+
+/* Legend container */
+.legend {
+  display: flex;
+  gap: 15px; /* Spacing between legend items */
+  justify-content: center; /* Centers the legend */
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Common styles for legend colors */
+.legend-color {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px; /* Space between the box and label */
+  border-radius: 3px; /* Slightly rounded corners */
+  border: 1px solid #ccc; /* Optional: Adds a border for clarity */
+}
+
+/* Specific difficulty colors */
+.legend-color.beginner {
+  background-color: #95b389;
+}
+
+.legend-color.intermediate {
+  background-color: #bc89a9;
+}
+
+.legend-color.advanced {
+  background-color: #a8621f;
+}
+
+
+/* ROUTE SEARCH */
+/* The Modal (background) */
+/* The side pop-up style */
+
+.open-filter-btn {
+    text-align: center;
+    background-color: #b50000; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px; 
+}
+.filter-sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 30px;
+    z-index: 1000;
+}
+
+/* Side pop-up content style */
+.filter-sidebar-content {
+    color: white;
+    padding: 10px 20px;
+    width: 250px;
+    font-family: Arial, sans-serif;
+}
+
+/* Button to close the side pop-up */
+.close-btn {
+    color: #aaa;
+    font-size: 36px;
+    font-weight: bold;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: white;
+}
+
+/* The filter form styling */
+.filter-section {
+    margin-bottom: 15px;
+}
+
+.filter-section label {
+    margin-bottom: 5px;
+}
+
+.filter-section input, .filter-section select {
+    width: 100%;
+    padding: 8px;
+    margin: 4px 0;
+    border-radius: 5px;
+}
+
+/* Animation to slide the sidebar in and out */
+.filter-sidebar.open {
+    width: 350px;
+}
+
+.overlay {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    display: none;
+}
+
+  
+  button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  
+/* BUTTONS */
+input[type="submit"], button[type="submit"] {
+    background-color: #4CAF50; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px; 
+  }
+  
+  input[type="submit"]:hover, button[type="submit"]:hover {
+    background-color: #45a049;
+  }
