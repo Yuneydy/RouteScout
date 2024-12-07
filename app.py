@@ -114,7 +114,6 @@ def signUp():
         curs.execute('select last_insert_id()')
         row = curs.fetchone()
         uid = row[0]
-        flash('FYI, you were issued UID {}'.format(uid))
         session['username'] = username
         session['uid'] = uid
         session['logged_in'] = True
@@ -123,10 +122,11 @@ def signUp():
         pronouns = request.form.get('pronouns')
         level = request.form.get('level')
         overallMileage = request.form.get('overall_mileage')
-        avgPaceHour = request.form.get('average_pace_hour')
-        avgPaceMin = request.form.get('average_pace_min')
+        avgPaceHour = request.form.get('average_pace_min')
+        avgPaceMin = request.form.get('average_pace_sec')
         avgPaceOverall = avgPaceHour + avgPaceMin
-
+        if len(avgPaceOverall)<4:
+              avgPaceOverall = "0"+avgPaceOverall
         conn = dbi.connect()
         curs = dbi.cursor(conn)
         insertUserQuery = 'INSERT into user (uid, username, pronouns, level, overall_mileage, average_pace, routes_created) VALUES (%s, %s, %s, %s, %s, %s, %s)'
@@ -265,7 +265,10 @@ def profile():
        level = row['level']
        overallMileage = row['overall_mileage']
        averagePace = row['average_pace']
+       avgPaceMin = averagePace[:2]
+       avgPaceSec = averagePace[2:]
        routesCreated = row['routes_created']
+
        if request.method == 'GET':
         return render_template(
             'profile.html',
@@ -273,7 +276,8 @@ def profile():
             pronouns=pronouns,
             level=level,
             overallMileage=overallMileage,
-            averagePace=averagePace,
+            avgPaceMin=avgPaceMin,
+            avgPaceSec=avgPaceSec,
             routesCreated=routesCreated
         )
        
@@ -285,7 +289,9 @@ def profile():
                 newUserName = request.form.get('new-username')
                 newPronouns = request.form.get('new-pronouns')
                 newLevel = request.form.get('new-level')
-                newPace = request.form.get('new-pace')
+                newPaceMin = request.form.get('new-pace-min')
+                newPaceSec = request.form.get('new-pace-sec')
+                newPace = newPaceMin+newPaceSec
                 updateUserQuery = ''' update user 
                 set username = %s, pronouns = %s, level = %s, average_pace = %s 
                 where uid = %s

@@ -26,12 +26,12 @@
 
 <form id="joinform" action="/join/" method="post">
     <h2>Join</h2>
-    <p><label><input type="text" name="username" required pattern="^\w+$"> Username</label></p>
-    <p><label><input type="password" name="password1" required> Password </label></p>
-    <p><label><input type="password" name="password2" required> Password again </label></p>
+    <p><label>Username: <input type="text" name="username" required pattern="^\w+$"></label></p>
+    <p><label>Password: <input type="password" name="password1" required> </label></p>
+    <p><label>Password again: <input type="password" name="password2" required></label></p>
 
-    <p><label><input type="text" name="pronouns">Pronouns</label></p>
-    <p><label for="level">What's your level?</label></p>
+    <p><label>What are your pronouns? <input type="text" name="pronouns" placeholder="pronouns/here" > </label> </p>
+    <p><label for="level">What's your running level?</label></p>
 
     <select name="level" id="level">
       <option value="Beginner">Beginner</option>
@@ -39,8 +39,8 @@
       <option value="Advanced">Advanced</option>
     </select>
 
-    <p><label>What is your current overall mileage?</label><input type="text" name="overall_mileage"></p>
-    <p><label>What is your current average pace:</label><input type="text" name="average_pace_hour">:<input type="text" name="average_pace_min"></p>
+    <p><label>What is your current overall mileage? [number] </label><input type="text" name="overall_mileage" placeholder="number of miles"></p>
+    <p><label>What is your current average pace? </label><input type="text" name="average_pace_min" placeholder="minutes">:<input type="text" name="average_pace_sec" placeholder="seconds"></p>
     
     <p><button type="submit">Submit</button></p>
 </form>
