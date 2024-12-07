@@ -380,4 +380,13 @@ input[type="submit"], button[type="submit"] {
     background-color: #45a049;
   }
 
-  
+  /*RATINGS*/
+
+  .rating {
+    width: 180px;
+ }
+ 
+ .rating__star {
+    cursor: pointer;
+    color: #dabd18b2;
+ }

@@ -17,7 +17,7 @@
     <span class="close-btn" onclick="toggleFilter()">&times;</span>
 
     <form id="search-filters" method="post" action="{{ url_for('search_route') }}">     
-        <script> 
+        <script>
             function updateMileageValue(value) {
                 document.getElementById('mileageValue').textContent = value;
             }
@@ -50,10 +50,28 @@
                     if (event.target === modal) {
                         modal.style.display = "none";
             }
+            })};
+
+            const ratingStars = Array.from(document.getElementsByClassName("rating__star"));
+
+            function executeRating(stars) {
+            const starClassActive = "rating__star fas fa-star"; // Filled star
+            const starClassInactive = "rating__star far fa-star"; // Empty star
+
+            stars.forEach((star, index) => {
+                star.onclick = () => {
+                // Loop through all the stars
+                stars.forEach((s, i) => {
+                    // Change class based on whether the star index is <= clicked star's index
+                    s.className = i <= index ? starClassActive : starClassInactive;
+                });
+                };
             });
-};
-        </script>
-        
+            } 
+
+            executeRating(ratingStars);
+    </script>
+       
         <!-- Filter Section -->
         <div class="filter-section">
             <label>Route Name:</label>
