@@ -197,14 +197,19 @@ def upload_route():
                fountDescrip = request.form.get("water_location")
                numMile = float(mile)
 
+               
+
                if routeTcx:
                      nameOfFile = secure_filename(routeTcx.filename)
                      path = os.path.join(app.config['UPLOAD_FOLDER'], nameOfFile)
                      routeTcx.save(path)
                      app.logger.info(f'File saved at {path}')
                      flash('Route file uploaded successfully: ' + nameOfFile)
+                
 
-                     
+               uid = session.get('uid')
+               if uid is None:
+                     app.logger.error ('No user with this id')
                curs = dbi.cursor(conn)
                query = '''INSERT INTO route_info(name, route_description, route_tcx, embedded_map_link, level, mileage, 
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
