@@ -11,7 +11,7 @@
 <body>
     <h1>Upload Details About Your Running Route</h1>
 
-<form method="post" action="{{url_for('upload_route')}}" enctype="multipart/form-data"></form>>
+    <form method="post" action="{{url_for('upload_route')}}" enctype="multipart/form-data">
     <p>
         <label for="name">Route Name: </label>
         <input type="text" name="name" id="name" required>
@@ -25,6 +25,7 @@
     <p>
         <label for="route_tcx">Route TCX:</label>
         <input type="file" id="route_tcx" name="route_tcx" accept=".tcx" required><br>
+   
     </p>    
     
     <p>
@@ -130,11 +131,8 @@
         <label for="water_location">Water Locations </label>
         <textarea name="water_location" id="water_location" rows="3" placeholder="e.g., Water fountain by MIT Boathouse"></textarea>
     </p>
-
-
     
 </body>
-
 
     <button type="submit">Submit</button>
 </form>

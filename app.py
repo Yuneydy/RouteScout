@@ -26,6 +26,7 @@ upload_path = os.path.join(os.getcwd(), 'static/uploads')
 if not os.path.exists(upload_path):
     os.makedirs(upload_path)  # Create the directory if it doesn't exist
 app.config['UPLOAD_FOLDER'] = upload_path
+app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
 
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
@@ -176,6 +177,14 @@ def upload_route():
                routeName = request.form.get("name")
                routeDescrip = request.form.get("notes")
                routeTcx = request.files.get("route_tcx")
+
+
+               if routeTcx:
+                     app.logger.info(f'File received: {routeTcx.filename}')
+               else:
+                    app.logger.warning('No file received in the request') 
+
+
                embeddedMap = request.form.get("embedded_map_link")
                levelRun = request.form.get("difficulty")
                mile = request.form.get("distance")
