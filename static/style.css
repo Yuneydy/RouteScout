@@ -477,3 +477,19 @@ input[type="submit"], button[type="submit"] {
   margin-top: 15px;
   text-align: center;
 }
+
+/* Label styling */
+
+.intro-center-container {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  height: 50vh;
+  margin: 0;
+}
+
+.login {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+}
