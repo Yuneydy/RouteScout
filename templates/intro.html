@@ -1,19 +1,6 @@
+{% extends "base.html" %}
 
-<!doctype html>
-<html lang='en'>
-<head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
-    <meta charset='utf-8'>
-    <!-- for mobile-friendly pages -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name=author content="">
-    <title>{{ page_title }}</title>
-    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
-    {% block head_stuff %} {% endblock %}
-</head>
-<body>
+{% block main_content %}
 
 <h1 class="intro-center-container">Welcome to RouteScout!</h1>
 

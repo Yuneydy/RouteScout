@@ -340,8 +340,7 @@ def profileFeed():
 
 
        if filter_option == "user":
-               user_id = uid
-               routes = q.get_user_routes(conn, user_id)
+               routes = q.get_user_routes(conn, uid)
        else:
                routes = q.get_all_routes(conn)
         
