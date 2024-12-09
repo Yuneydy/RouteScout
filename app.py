@@ -67,8 +67,6 @@ def login():
         stored = row['hashed']
         uid = row['uid']
         print('LOGIN', username)
-        print('database has stored: {} {}'.format(stored,type(stored)))
-        print('form supplied passwd: {} {}'.format(passwd,type(passwd)))
         hashed2 = bcrypt.hashpw(passwd.encode('utf-8'),
                                 stored.encode('utf-8'))
         hashed2_str = hashed2.decode('utf-8')
@@ -272,7 +270,7 @@ def profile():
        row = curs.fetchone()
        print(row)
        username = row['username']
-       findUserInfoquery = 'select * from user where uid=%s'
+       findUserInfoquery = '''select pronouns, level, overall_mileage, average_pace, routes_created from user where uid=%s'''
        curs.execute(findUserInfoquery, uid)
        row = curs.fetchone()
        print(row)
