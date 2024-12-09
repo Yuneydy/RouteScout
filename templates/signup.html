@@ -1,18 +1,4 @@
-<!doctype html>
-<html lang='en'>
-<head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
-    <meta charset='utf-8'>
-    <!-- for mobile-friendly pages -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name=author content="">
-    <title>{{ page_title }}</title>
-    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
-    {% block head_stuff %} {% endblock %}
-</head>
-<body class="join-page">
+<link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -72,8 +58,3 @@
 <a href="{{url_for('login')}}" target="_self" class="back-to-login">
   <button class="styled-button">Back to Login</button>
 </a>
-
-
-
-</body>
-</html>

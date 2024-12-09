@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-
-{% block main_content %}
+<link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -33,6 +31,3 @@
 <a href="{{url_for('signUp')}}" target="_self" class="back-to-login">
     <button class="styled-button">Sign Up!</button>
 </a>
-
-</body>
-</html>
