@@ -111,6 +111,7 @@ nav ul {
     display: flex;
     flex-direction: row;
     text-align: center;
+    justify-content: space-between;
 }
 
 /* Route Display */
