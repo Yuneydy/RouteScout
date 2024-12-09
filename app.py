@@ -26,6 +26,7 @@ upload_path = os.path.join(os.getcwd(), 'static/uploads')
 if not os.path.exists(upload_path):
     os.makedirs(upload_path)  # Create the directory if it doesn't exist
 app.config['UPLOAD_FOLDER'] = upload_path
+app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
 
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
@@ -114,7 +115,6 @@ def signUp():
         curs.execute('select last_insert_id()')
         row = curs.fetchone()
         uid = row[0]
-        flash('FYI, you were issued UID {}'.format(uid))
         session['username'] = username
         session['uid'] = uid
         session['logged_in'] = True
@@ -123,10 +123,11 @@ def signUp():
         pronouns = request.form.get('pronouns')
         level = request.form.get('level')
         overallMileage = request.form.get('overall_mileage')
-        avgPaceHour = request.form.get('average_pace_hour')
-        avgPaceMin = request.form.get('average_pace_min')
+        avgPaceHour = request.form.get('average_pace_min')
+        avgPaceMin = request.form.get('average_pace_sec')
         avgPaceOverall = avgPaceHour + avgPaceMin
-
+        if len(avgPaceOverall)<4:
+              avgPaceOverall = "0"+avgPaceOverall
         conn = dbi.connect()
         curs = dbi.cursor(conn)
         insertUserQuery = 'INSERT into user (uid, username, pronouns, level, overall_mileage, average_pace, routes_created) VALUES (%s, %s, %s, %s, %s, %s, %s)'
@@ -176,6 +177,14 @@ def upload_route():
                routeName = request.form.get("name")
                routeDescrip = request.form.get("notes")
                routeTcx = request.files.get("route_tcx")
+
+
+               if routeTcx:
+                     app.logger.info(f'File received: {routeTcx.filename}')
+               else:
+                    app.logger.warning('No file received in the request') 
+
+
                embeddedMap = request.form.get("embedded_map_link")
                levelRun = request.form.get("difficulty")
                mile = request.form.get("distance")
@@ -188,14 +197,19 @@ def upload_route():
                fountDescrip = request.form.get("water_location")
                numMile = float(mile)
 
+               
+
                if routeTcx:
                      nameOfFile = secure_filename(routeTcx.filename)
                      path = os.path.join(app.config['UPLOAD_FOLDER'], nameOfFile)
                      routeTcx.save(path)
                      app.logger.info(f'File saved at {path}')
                      flash('Route file uploaded successfully: ' + nameOfFile)
+                
 
-                     
+               uid = session.get('uid')
+               if uid is None:
+                     app.logger.error ('No user with this id')
                curs = dbi.cursor(conn)
                query = '''INSERT INTO route_info(name, route_description, route_tcx, embedded_map_link, level, mileage, 
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
@@ -266,7 +280,10 @@ def profile():
        level = row['level']
        overallMileage = row['overall_mileage']
        averagePace = row['average_pace']
+       avgPaceMin = averagePace[:2]
+       avgPaceSec = averagePace[2:]
        routesCreated = row['routes_created']
+
        if request.method == 'GET':
         return render_template(
             'profile.html',
@@ -274,7 +291,8 @@ def profile():
             pronouns=pronouns,
             level=level,
             overallMileage=overallMileage,
-            averagePace=averagePace,
+            avgPaceMin=avgPaceMin,
+            avgPaceSec=avgPaceSec,
             routesCreated=routesCreated
         )
        
@@ -286,7 +304,9 @@ def profile():
                 newUserName = request.form.get('new-username')
                 newPronouns = request.form.get('new-pronouns')
                 newLevel = request.form.get('new-level')
-                newPace = request.form.get('new-pace')
+                newPaceMin = request.form.get('new-pace-min')
+                newPaceSec = request.form.get('new-pace-sec')
+                newPace = newPaceMin+newPaceSec
                 updateUserQuery = ''' update user 
                 set username = %s, pronouns = %s, level = %s, average_pace = %s 
                 where uid = %s

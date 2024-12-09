@@ -10,7 +10,7 @@
 <p>pronouns: {{pronouns}}</p>
 <p>current level: {{level}}</p>
 <p>current overall mileage: {{overallMileage}}</p>
-<p>current averrage pace: {{averagePace}}</p>
+<p>current averrage pace: {{avgPaceMin}}:{{avgPaceSec}}</p>
 <p>number of routes you have created: {{routesCreated}}</p>
 </div>
 
@@ -19,7 +19,7 @@
     <table>
         <tr>
             <td><label for="new-username">Username:</label></td>
-            <td><input id="new-username" name="new-username" type="text" value="{{ username }}" required></td> 
+            <td><input id="new-username" name="new-username" type="text" value="{{ username }}"></td> 
         </tr>
         <tr>
             <td><label for="new-pronouns">Pronouns:</label></td>
@@ -27,11 +27,11 @@
         </tr>
         <tr>
             <td><label for="new-level">Level:</label></td>
-            <td><input id="new-level" name="new-level" type="text" value="{{ level }}" required></td>
+            <td><input id="new-level" name="new-level" type="text" value="{{ level }}"></td>
         </tr>
         <tr>
             <td><label for="new-pace">Average Pace:</label></td>
-            <td><input id="new-pace" name="new-pace" type="text" value="{{ averagePace }}" required></td>
+            <td><input id="new-pace-min" name="new-pace-min" type="text" value="{{ avgPaceMin }}">: <input id="new-pace-sec" name="new-pace-sec" type="text" value="{{ avgPaceSec }}"> </td>
         </tr>
     </table>
     <div>

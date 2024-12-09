@@ -12,7 +12,7 @@
     <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
     {% block head_stuff %} {% endblock %}
 </head>
-<body>
+<body class="join-page">
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -24,15 +24,27 @@
 {% endif %}
 {% endwith %}
 
-<form id="loginform" action="/login/" method="post">
-    <h2>Login</h2>
-    <p><label>Username: <input type="text" name="username" required pattern="^\w+$"></label></p>
-    <p><label>Password: <input type="password" name="password" required></label></p>
-    <p><button type="submit">Submit</button></p>
-</form>
+<div class="center-container">
+    <form id="joinform" action="/login/" method="post">
+        <h2>Login</h2>
+        
+        <label>Username:
+            <input type="text" name="username" required pattern="^\w+$">
+        </label>
+        
+        <label>Password:
+            <input type="password" name="password" required>
+        </label>
+        
+        <button type="submit">Submit</button>
 
-<a href="{{url_for('signUp')}}" target="_self">
-    <button>Sign Up!</button>
+        
+    </form>
+</div>
+
+<a href="{{url_for('signUp')}}" target="_self" class="back-to-login">
+    <button class="styled-button">Sign Up!</button>
 </a>
+
 </body>
 </html>

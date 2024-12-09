@@ -35,6 +35,10 @@ body {
   background-color: var(--neutral-background);
 }
 
+body.join-page {
+  background-color: #dae2dc;
+}
+
 /* NAV BAR */
 nav ul {
     list-style-type: none;
@@ -390,6 +394,21 @@ input[type="submit"], button[type="submit"] {
     background-color: #45a049;
   }
 
+  .styled-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.styled-button:hover {
+    background-color: #45a049;
+}
+
   /*RATINGS*/
 
 /* General form styling */
@@ -498,4 +517,97 @@ form#star_rating {
   color: #333;
   margin-bottom: 5px;
   display: block;
+}
+
+  .rating {
+    width: 180px;
+ }
+ 
+ .rating__star {
+    cursor: pointer;
+    color: #dabd18b2;
+ }
+
+ /*LOGIN and SIGN UP*/
+
+ .center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  margin: 0;
+}
+
+/* Style the form */
+#joinform {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  width: 400px;
+}
+
+/* Heading style */
+#joinform h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333; 
+  margin-bottom: 20px;
+  text-align: center; 
+}
+
+/* Label styling */
+#joinform label {
+  display: block; 
+  font-size: 14px;
+  color: #555; 
+  font-weight: 600; 
+  width: 100%;            
+  margin-bottom: 5px;         
+}
+
+#joinform button {
+  align-self: center; 
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px;
+  text-transform: uppercase;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#joinform button:hover {
+  background-color: #45a049;
+}
+
+.small-input {
+  width: 40%;
+}
+
+.back-to-login {
+  display: block;
+  margin-top: 15px;
+  text-align: center;
+}
+
+/* Label styling */
+
+.intro-center-container {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  height: 50vh;
+  margin: 0;
+}
+
+.login {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
 }

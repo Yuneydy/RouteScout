@@ -12,7 +12,7 @@
     <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
     {% block head_stuff %} {% endblock %}
 </head>
-<body>
+<body class="join-page">
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -24,30 +24,53 @@
 {% endif %}
 {% endwith %}
 
-<form id="joinform" action="/join/" method="post">
-    <h2>Join</h2>
-    <p><label><input type="text" name="username" required pattern="^\w+$"> Username</label></p>
-    <p><label><input type="password" name="password1" required> Password </label></p>
-    <p><label><input type="password" name="password2" required> Password again </label></p>
 
-    <p><label><input type="text" name="pronouns">Pronouns</label></p>
-    <p><label for="level">What's your level?</label></p>
+<div class="center-container">
+  <form id="joinform" action="/join/" method="post">
+      <h2>Join RouteScout!</h2>
+      
+      <label>Username:
+          <input type="text" name="username" required pattern="^\w+$">
+      </label>
+      
+      <label>Password:
+          <input type="password" name="password1" required>
+      </label>
+      
+      <label>Password again:
+          <input type="password" name="password2" required>
+      </label>
+      
+      <label>What are your pronouns?
+          <input type="text" name="pronouns" placeholder="pronouns/here" required>
+      </label>
+      
+      <label for="level">What's your running level?</label>
+      <select name="level" id="level">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+      </select>
+      
+      <label>What is your current overall mileage? [number]
+        <input type="number" name="overall_mileage" placeholder="number of miles" required min="0" step="1">
+      
+      <label>What is your current average pace?
+          <input type="text" name="average_pace_min" placeholder="minutes" pattern="\d{1,2}" maxlength="2" class="small-input" required>
+          <span>:</span>
+          <input type="text" name="average_pace_sec" placeholder="seconds" pattern="\d{1,2}" maxlength="2" class="small-input" required>
+      </label>
+      
+      <button type="submit">Submit</button>
 
-    <select name="level" id="level">
-      <option value="Beginner">Beginner</option>
-      <option value="Intermediate">Intermediate</option>
-      <option value="Advanced">Advanced</option>
-    </select>
+  </form>
 
-    <p><label>What is your current overall mileage?</label><input type="text" name="overall_mileage"></p>
-    <p><label>What is your current average pace:</label><input type="text" name="average_pace_hour">:<input type="text" name="average_pace_min"></p>
-    
-    <p><button type="submit">Submit</button></p>
-</form>
+</div>
 
-<a href="{{url_for('login')}}" target="_self">
-    <button>Back to Login</button>
+<a href="{{url_for('login')}}" target="_self" class="back-to-login">
+  <button class="styled-button">Back to Login</button>
 </a>
+
 
 
 </body>
