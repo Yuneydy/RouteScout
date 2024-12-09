@@ -52,24 +52,24 @@
             }
             })};
 
-            const ratingStars = Array.from(document.getElementsByClassName("rating__star"));
+            var radios = document.querySelectorAll('#star_rating input[type=radio]');
+            var output = document.querySelector('#star_rating output');
 
-            function executeRating(stars) {
-            const starClassActive = "rating__star fas fa-star"; // Filled star
-            const starClassInactive = "rating__star far fa-star"; // Empty star
-
-            stars.forEach((star, index) => {
-                star.onclick = () => {
-                // Loop through all the stars
-                stars.forEach((s, i) => {
-                    // Change class based on whether the star index is <= clicked star's index
-                    s.className = i <= index ? starClassActive : starClassInactive;
+            // Iterate through all radio buttons and add a click
+            // event listener to the labels
+            Array.prototype.forEach.call(radios, function(el, i){
+                var label = el.nextSibling.nextSibling;
+                label.addEventListener("click", function(event){
+                    do_something(label.querySelector('span').textContent);
                 });
-                };
             });
-            } 
 
-            executeRating(ratingStars);
+            // If the form gets submitted, do_something
+            document.querySelector('#star_rating').addEventListener('submit', function(event){
+                do_something(document.querySelector('#star_rating :checked ~ label span').textContent);
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            });
     </script>
        
         <!-- Filter Section -->
@@ -179,7 +179,7 @@
             <span class="close-btn" onclick="closeModal('route-{{route['routeID']}}')">&times;</span>
             <h2>{{route["name"]}}</h2>
             <div class="modal-iframe-container">
-                <iframe src="{{route['embedded_map_link']}}"></iframe>
+                <iframe alt="No map was uploaded for this route." src="{{route['embedded_map_link']}}"></iframe>
               </div>
             <p><b>Route ID:</b> {{route["routeID"]}}</p>
             <p><b>Uploaded By:</b> {{route["username"]}}</p>
@@ -202,6 +202,63 @@
                     {% endif %}
                 {% endfor %}
             </ul>
+            
+            <form id="star_rating">
+                
+                <p> Rate this route: </p>
+                <input value="0" id="star0" checked
+                   type="radio" name="rating" class="visuallyhidden">
+                   <label class="star" for="star0">
+                       <span class="visuallyhidden"></span>
+                       <svg viewBox="0 0 512 512">
+                           <g stroke-width="70" stroke-linecap="square">
+                               <path d="M91.5,442.5 L409.366489,124.633512"></path>
+                               <path d="M90.9861965,124.986197 L409.184248,443.184248"></path>
+                           </g>
+                       </svg>
+                   </label>
+               
+                   <input value="1" id="star1"
+                       type="radio" name="rating" class="visuallyhidden">
+                   <label class="star" for="star1">
+                       <span class="visuallyhidden"></span>
+                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
+                   </label>
+               
+                   <input value="2" id="star2"
+                       type="radio" name="rating" class="visuallyhidden">
+                   <label class="star" for="star2">
+                       <span class="visuallyhidden"></span>
+                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
+                   </label>
+               
+                   <input value="3" id="star3"
+                       type="radio" name="rating" class="visuallyhidden">
+                   <label class="star" for="star3">
+                       <span class="visuallyhidden"></span>
+                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
+                   </label>
+               
+                   <input value="4" id="star4"
+                       type="radio" name="rating" class="visuallyhidden">
+                   <label class="star" for="star4">
+                       <span class="visuallyhidden"></span>
+                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
+                   </label>
+               
+                   <input value="5" id="star5"
+                       type="radio" name="rating" class="visuallyhidden">
+                   <label class="star" for="star5">
+                       <span class="visuallyhidden"></span>
+                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
+                   </label>
+                   <br></br>
+                   <p id="com">
+                    <label for="comment">Do you have any comments about the route you ran?</label>
+                </p>
+                <textarea id="comment" name="comment" rows="5" cols="40" placeholder="Share your thoughts about this route..."></textarea>
+                <button type="submit" class="btn-small focusable">Submit rating</button>
+
             <p><b>Overall Rating:</b></p>
             <ul>
                 {% for avgRating in avg_ratings %}

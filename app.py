@@ -342,42 +342,69 @@ def aboutUs():
 
 # Allows users to say which routes they have completed and give them a rating
 # and a comment
-@app.route('/ranRoute/', methods=["GET", "POST"])
+@app.route('/routeSearch/', methods=["GET", "POST"])
 def ranRoute():
-       uid = session.get('uid')
-       if (uid is None):
-          return redirect(url_for('intro'))
-       if request.method == "GET":
-               return render_template('ranRoute.html')
-       else:
-               #get info from form
-               routeNum = request.form.get('route_ID')
-               routeRating = request.form.get('rating') 
-               routeComment = request.form.get('comment')
-               # make them integers
-               num = int(routeNum)
-               rating = int(routeRating)
-               # connect to databse
-               conn = dbi.connect()
-               curs = dbi.cursor(conn)
-               # inserting into route_rating table
-               query_rating = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
-               curs.execute(query_rating, (uid, routeNum, routeRating, routeComment))
-               # finding mileage of the run
-               query_findMileage = 'SELECT mileage from route_info where routeID = %s'
-               curs.execute(query_findMileage, routeNum)
-               row = curs.fetchone()
-               routeMileage = row[0]
-               query_currentMileage = 'SELECT overall_mileage from user where uid = %s'
-               curs.execute(query_currentMileage, uid)
-               row1 = curs.fetchone()
-               currentM = float(row1[0])
-               newMileage = currentM + routeMileage
-               query_newMileage = 'UPDATE user SET overall_mileage = %s WHERE uid = %s'
-               curs.execute(query_newMileage, (newMileage, uid))
-               conn.commit()
-               flash('Your route review has been submitted and your overall mileage has been updated! Thank you!')
-               return render_template('ranRoute.html')
+    uid = session.get('uid')
+    if uid is None:
+        return redirect(url_for('intro'))
+    
+    if request.method == "GET":
+        return render_template('routeSearch.html')
+    else:
+        # Get info from the form
+        routeNum = request.form.get('route_ID')  # Assuming a hidden or separate input for route_ID
+        routeRating = request.form.get('rating') 
+        routeComment = request.form.get('comment')
+
+        # Ensure valid inputs
+        if not routeNum or not routeRating:
+            flash('Route number and rating are required.')
+            return redirect(url_for('ranRoute'))
+
+        try:
+            # Convert to integers where applicable
+            num = int(routeNum)
+            rating = int(routeRating)
+        except ValueError:
+            flash('Invalid data provided for route number or rating.')
+            return redirect(url_for('ranRoute'))
+
+        conn = dbi.connect()
+        curs = dbi.cursor(conn)
+
+        # Insert into route_rating table
+        query_rating = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
+        curs.execute(query_rating, (uid, num, rating, routeComment))
+
+        # Find mileage of the run
+        query_findMileage = 'SELECT mileage FROM route_info WHERE routeID = %s'
+        curs.execute(query_findMileage, (num,))
+        row = curs.fetchone()
+        if row is None:
+            flash('Route not found in database.')
+            return redirect(url_for('ranRoute'))
+        
+        routeMileage = row[0]
+
+        # Get the user's current mileage
+        query_currentMileage = 'SELECT overall_mileage FROM user WHERE uid = %s'
+        curs.execute(query_currentMileage, (uid))
+        row1 = curs.fetchone()
+        if row1 is None:
+            flash('User information not found.')
+            return redirect(url_for('ranRoute'))
+        
+        currentM = float(row1[0])
+        newMileage = currentM + routeMileage
+
+        # Update user's overall mileage
+        query_newMileage = 'UPDATE user SET overall_mileage = %s WHERE uid = %s'
+        curs.execute(query_newMileage, (newMileage, uid))
+        conn.commit()
+
+        flash('Your route review has been submitted, and your overall mileage has been updated! Thank you!')
+        return redirect(url_for('routeSearch'))
+
 
       
     

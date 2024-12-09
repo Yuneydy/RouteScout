@@ -1,0 +1,143 @@
+/* Define color variables for easier customization */
+:root {
+    --primary-green: #2e8b57;   /* Green for headers, buttons, and focus states */
+    --secondary-green: #228b22; /* Darker green for hover effects */
+    --accent-color: #b50000;     /* Red for error messages */
+    --neutral-background: #f4f7f6; /* Light gray background */
+    --form-background: #ffffff;  /* White background for form */
+    --border-color: #ccc;       /* Light gray border color */
+    --text-color: #333;         /* Dark gray text color */
+    --placeholder-color: #888;  /* Light gray placeholder text */
+}
+
+/* General body and font styling */
+body {
+    font-family: "Verdana", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--neutral-background);
+}
+
+/* Header Styling */
+h1 {
+    text-align: center;
+    color: var(--primary-green);
+    font-size: 2rem;
+    padding: 20px;
+    margin-bottom: 40px;
+}
+
+/* Form Styling */
+form {
+    background-color: var(--form-background);
+    margin: 0 auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Label Styling */
+label {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    display: block;
+    color: var(--text-color);
+}
+
+/* Input and Textarea Styling */
+input[type="text"], input[type="file"], input[type="radio"], select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box; /* To include padding in the width */
+    color: var(--text-color);
+}
+
+/* Textarea specific styling */
+textarea {
+    resize: vertical;
+}
+
+/* Placeholder Styling */
+input::placeholder, textarea::placeholder {
+    color: var(--placeholder-color);
+}
+
+/* Input and select focus states */
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-green);
+    outline: none;
+}
+
+/* Submit Button Styling */
+button[type="submit"] {
+    background-color: var(--primary-green);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Button hover effect */
+button[type="submit"]:hover {
+    background-color: var(--secondary-green);
+}
+
+/* Space out sections */
+p {
+    margin-bottom: 20px;
+}
+
+/* Styling for the #messages section (if used) */
+#messages {
+    color: var(--accent-color);
+    background-color: #ffe6e6;
+    border: 1px solid var(--accent-color);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+/* Specific styling for form sections using their IDs */
+#name, #notes, #route_tcx, #embedded_map_link, #distance, #location, #bathroom_location, #water_location {
+    margin-bottom: 20px;
+}
+
+/* Styling for starting and finishing towns */
+#starting_town, #finishing_town {
+    background-color: #f9f9f9;
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 4px;
+}
+
+/* Radio Button Styling */
+input[type="radio"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+/* Radio button labels to make them bold when checked */
+input[type="radio"]:checked + label {
+    font-weight: bold;
+}
+
+/* Styling for the "out and back" section */
+.outback input[type="radio"], .difficulty select, .bathrooms input[type="radio"] {
+    margin-right: 10px;
+}
+
+/* Section-specific classes */
+.route-name, .route-description, .route-tcx, .map-link, .distance, .starting-location, .finishing-location, .location, .outback, .difficulty, .bathrooms, .bathroom-location, .water, .water-location {
+    margin-bottom: 20px;
+}
