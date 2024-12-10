@@ -14,7 +14,10 @@
 <p>number of routes you have created: {{routesCreated}}</p>
 </div>
 
+
 <h2>Update Your Information</h2>
+
+<div class ="profile-info">
 <form method="POST" action="{{ url_for('profile') }}">
     <table>
         <tr>
@@ -26,18 +29,21 @@
             <td><input id="new-pronouns" name="new-pronouns" type="text" value="{{ pronouns }}"></td>
         </tr>
         <tr>
-            <td><label for="new-level">Level:</label></td>
+            <td><label for="new-level">Level (must be Beginner, Intermediate, or Advanced):</label></td>
             <td><input id="new-level" name="new-level" type="text" value="{{ level }}"></td>
         </tr>
         <tr>
             <td><label for="new-pace">Average Pace:</label></td>
-            <td><input id="new-pace-min" name="new-pace-min" type="text" value="{{ avgPaceMin }}">: <input id="new-pace-sec" name="new-pace-sec" type="text" value="{{ avgPaceSec }}"> </td>
+            <td><input  id="new-pace-min" name="new-pace-min" type="text" value="{{ avgPaceMin }}" maxlength="2" class="small-input">
+            <span>:</span>
+            <input id="new-pace-sec" name="new-pace-sec" type="text" value="{{ avgPaceSec }}" maxlength="2" class="small-input"></td>
         </tr>
     </table>
     <div>
-        <button type="submit" name="submit" value="update" class="btn btn-primary">Update Profile</button>
-        <button type="submit" name="submit" value="delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete your profile? This action cannot be undone.')">Delete Profile</button>
+        <button type="submit" name="submit" value="update" >Update Profile</button>
+        <button type="submit" name="submit" value="delete" onclick="return confirm('Are you sure you want to delete your profile? This action cannot be undone.')">Delete Profile</button>
     </div>
 </form>
+</div>
 
 {% endblock %}
