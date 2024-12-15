@@ -347,6 +347,19 @@ def aboutUs():
           return redirect(url_for('intro'))
        return render_template('aboutUs.html')
 
+# Gives informations about top users and top runs
+@app.route('/rankings/', methods=["GET", "POST"])
+def ranking():
+       uid = session.get('uid')
+       if (uid is None):
+          return redirect(url_for('intro'))
+       conn = dbi.connect()
+       topUsers = q.get_top_users(conn)
+       topRoutes = q.get_top_routes(conn)
+       print(topUsers)
+       print(topRoutes)
+       return render_template('rankings.html', topUsers = topUsers, topRoutes=topRoutes)
+
 # Allows users to say which routes they have completed and give them a rating
 # and a comment
 @app.route('/routeSearch/', methods=["GET", "POST"])

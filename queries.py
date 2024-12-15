@@ -104,3 +104,28 @@ def get_routes(conn, name, level, mileage, start, finish, out, bath, water):
     
     info = curs.fetchall()
     return info
+
+
+def get_top_routes(conn):
+    """
+    Retrieves routes with the top three highest ratings.
+    Returns:
+        A list of tuples, where each tuple represents a route is in the top three highest rated routes.
+    """
+    sql = '''select routeID, avg(rating) as avg_rating from route_rating group by routeID order by avg_rating desc limit 3;'''
+    curs = dbi.cursor(conn)
+    curs.execute(sql)
+    rows = curs.fetchall()
+    return rows
+
+def get_top_users(conn):
+    """
+    Retrieves three of the top users with the most amount of routes uploaded.
+    Returns:
+        A list of tuples, where each tuple represents a user is in the top three users.
+    """
+    sql = "select uid, username, pronouns, level, routes_created from user order by routes_created desc limit 3"
+    curs = dbi.cursor(conn)
+    curs.execute(sql)
+    rows = curs.fetchall()
+    return rows

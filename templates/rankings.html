@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<h1 class = "about-title">Top Users and Top Runs on Route Scout Right Now!</h1>
+
+
+
+{% for user in topUsers %}
+<p>{{ user[1] }}</p>
+{% endfor %}
+
+{% for route in topRoutes %}
+<p>{{ route[0] }}</p>
+{% endfor %}
+
+{% endblock %}
