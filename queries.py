@@ -8,7 +8,11 @@ def get_all_routes(conn):
         `route_info` and the `username` from the `user` table.
     """
     curs = dbi.dict_cursor(conn)
-    sql = '''select *, user.username from route_info inner join user on route_info.addedBy = user.uid'''
+    sql = '''select routeID, route_info.created_at, name, route_description, route_tcx, 
+    embedded_map_link, route_info.level, mileage, starting_location, starting_town, finishing_location, 
+    out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy, 
+    uid, username, pronouns, user.level, overall_mileage, average_pace, routes_created,
+    user.username from route_info inner join user on route_info.addedBy = user.uid'''
     curs.execute(sql)
     rows = curs.fetchall()
     return rows
@@ -20,7 +24,7 @@ def get_all_ratings(conn):
         A list of tuples, where each tuple represents all route ratings.
     """
     curs = dbi.cursor(conn)
-    sql = '''select * from route_rating'''
+    sql = '''select ratingID, uid, routeID, rating, comment from route_rating'''
     curs.execute(sql)
     rows = curs.fetchall()
     return rows
@@ -47,7 +51,11 @@ def get_user_routes(conn, user_id):
         and includes all fields from `route_info` and the `username` from the `user` table.
     """
     curs = dbi.dict_cursor(conn)
-    sql = '''select *, user.username from route_info inner join user on route_info.addedBy = user.uid where addedBy = %s'''
+    sql = '''select routeID, name, route_info.created_at, route_description, route_tcx, 
+    embedded_map_link, route_info.level, mileage, starting_location, starting_town, finishing_location, 
+    out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy, 
+    uid, username, pronouns, user.level, overall_mileage, average_pace, routes_created,
+    user.username from route_info inner join user on route_info.addedBy = user.uid where addedBy = %s'''
     curs.execute(sql, [user_id])
     rows = curs.fetchall()
     return rows
@@ -59,9 +67,10 @@ def get_routes(conn, name, level, mileage, start, finish, out, bath, water):
         A list of tuples, where each tuple represents a route that matches the filters.
     """
     curs = dbi.cursor(conn)
-    sql = '''select * from route_info 
-                where
-                '''
+    sql = '''select routeID, name, route_description, route_tcx, 
+    embedded_map_link, level, mileage, starting_location, starting_town, finishing_location, 
+    out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy from route_info 
+    where '''
     filters = []
     if name != None:
         sql += 'name like %s and '

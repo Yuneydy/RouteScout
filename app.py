@@ -217,14 +217,8 @@ def upload_route():
                              None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
                
                #updates profile page, adding one to the number of runs you have created
-               query_currentNumber = 'SELECT routes_created from user WHERE uid = %s'
-               curs.execute(query_currentNumber, uid)
-               row1 = curs.fetchone()
-               currentNumber = int(row1[0])
-               newNumber = currentNumber + 1
-               query_newNumber = 'UPDATE user SET routes_created = %s WHERE uid = %s'
-               curs.execute(query_newNumber, (newNumber, uid))
-
+               query_newNumber = 'UPDATE user SET routes_created = routes_created+1 WHERE uid = %s'
+               curs.execute(query_newNumber, (uid))
                conn.commit()
                flash('Your route has been submitted! Thank you!')
                return render_template('routeForm.html', uid=uid)
@@ -297,8 +291,6 @@ def profile():
        if request.method == 'POST':
              action = request.form.get('submit')
              if action == "update":
-                conn = dbi.connect()
-                curs = dbi.dict_cursor(conn)
                 newUserName = request.form.get('new-username')
                 newPronouns = request.form.get('new-pronouns')
                 newLevel = request.form.get('new-level')
@@ -317,8 +309,6 @@ def profile():
                 flash('Profile updated successfully')
                 return redirect(url_for('profile'))
              else:
-                conn = dbi.connect()
-                curs = dbi.dict_cursor(conn)
                 deleteFromUser = 'delete from user where uid=%s'
                 curs.execute(deleteFromUser, [uid])
                 conn.commit()
@@ -421,13 +411,6 @@ def ranRoute():
 
         flash('Your route review has been submitted, and your overall mileage has been updated! Thank you!')
         return redirect(url_for('routeSearch'))
-
-
-      
-    
-# This route displays all the data from the submitted form onto the rendered page
-# It's unlikely you will ever need anything like this in your own applications, so
-# you should probably delete this handler
 
 if __name__ == '__main__':
     import sys, os
