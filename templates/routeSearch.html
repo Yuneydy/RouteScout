@@ -189,7 +189,7 @@
                 <iframe alt="No map was uploaded for this route." src="{{route['embedded_map_link']}}"></iframe>
               </div>
             {% if route['route_tcx'] and 'uploads/' in route['route_tcx'] %}
-              <a href="{{ url_for('static', filename=route['route_tcx']) }}" class="btn-small focusable" download>Download GPX</a>
+              <a href="{{ url_for('static', filename=route['route_tcx']) }}" download>Download GPX</a>
             {% else %}
                 <p>No downloadable route available</p>
             {% endif %}
