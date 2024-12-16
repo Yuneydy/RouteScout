@@ -118,6 +118,20 @@ def get_top_routes(conn):
     rows = curs.fetchall()
     return rows
 
+def get_top_routes_info(conn):
+    """
+    Retrieves route descriptions with the top three highest ratings.
+    Returns:
+        A list of tuples, where each tuple represents a route is in the top three highest rated routes.
+    """    
+    sql2 = '''select distinct route_info.name, route_info.route_description, route_info.mileage from route_info inner join route_rating on route_info.routeID =route_rating.routeID'''
+    curs = dbi.cursor(conn)
+    curs.execute(sql2)
+    rows2 = curs.fetchall()
+    return rows2
+
+
+
 def get_top_users(conn):
     """
     Retrieves three of the top users with the most amount of routes uploaded.

@@ -356,9 +356,11 @@ def ranking():
        conn = dbi.connect()
        topUsers = q.get_top_users(conn)
        topRoutes = q.get_top_routes(conn)
+       topRoutesDescription = q.get_top_routes_info(conn)
        print(topUsers)
        print(topRoutes)
-       return render_template('rankings.html', topUsers = topUsers, topRoutes=topRoutes)
+       print(topRoutesDescription)
+       return render_template('rankings.html', topUsers = topUsers, topRoutes=topRoutes, topRoutesDescription=topRoutesDescription)
 
 # Allows users to say which routes they have completed and give them a rating
 # and a comment

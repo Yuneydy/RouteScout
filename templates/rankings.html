@@ -2,16 +2,55 @@
 
 {% block main_content %}
 
-<h1 class = "about-title">Top Users and Top Runs on Route Scout Right Now!</h1>
+<h1 class = "about-title">Top Users on Route Scout Right Now with the Most Amount of Routes Uploaded!</h1>
 
 
+<div class="ranking-container">
+    <div class="user-box">
+        <div class="ranking-label">1st Place</div>
+        <p class="username">username: {{ topUsers[0][1] }}</p>
+        <p class="username">pronouns: {{ topUsers[0][2] }}</p>
+        <p class="username">number of routes created: {{ topUsers[0][4] }}</p>
+    </div>
+    <div class="user-box">
+        <div class="ranking-label">2nd Place</div>
+        <p class="username">username: {{ topUsers[1][1] }}</p>
+        <p class="username">pronouns: {{ topUsers[1][2] }}</p>
+        <p class="username">number of routes created: {{ topUsers[1][4] }}</p>
+    </div>
+    <div class="user-box">
+        <div class="ranking-label">3rd Place</div>
+        <p class="username">username: {{ topUsers[2][1] }}</p>
+        <p class="username">pronouns: {{ topUsers[2][2] }}</p>
+        <p class="username">number of routes created: {{ topUsers[2][4] }}</p>
+    </div>
+</div>
 
-{% for user in topUsers %}
-<p>{{ user[1] }}</p>
-{% endfor %}
+<h1 class = "about-title">Top Routes on Route Scout with the Highest Ratings!</h1>
 
-{% for route in topRoutes %}
-<p>{{ route[0] }}</p>
-{% endfor %}
+
+<div class="ranking-container">
+    <div class="user-box">
+        <div class="ranking-label">1st Place</div>
+        <p class="username">route ID: {{ topRoutes[0][0] }}</p>
+        <p class="username">route name: {{ topRoutesDescription[0][0] }}</p>
+        <p class="username">route description: {{ topRoutesDescription[0][1] }}</p>
+        <p class="username">mileage: {{ topRoutesDescription[0][2] }}</p>
+    </div>
+    <div class="user-box">
+        <div class="ranking-label">2nd Place</div>
+        <p class="username">route ID: {{ topRoutes[1][0] }}</p>
+        <p class="username">route name: {{ topRoutesDescription[1][0] }}</p>
+        <p class="username">route description: {{ topRoutesDescription[1][1] }}</p>
+        <p class="username">mileage: {{ topRoutesDescription[1][2] }}</p>
+    </div>
+    <div class="user-box">
+        <div class="ranking-label">3rd Place</div>
+        <p class="username">route ID: {{ topRoutes[2][0] }}</p>
+        <p class="username">route name: {{ topRoutesDescription[2][0] }}</p>
+        <p class="username">route description: {{ topRoutesDescription[2][1] }}</p>
+        <p class="username">mileage: {{ topRoutesDescription[2][2] }}</p>
+    </div>
+</div>
 
 {% endblock %}

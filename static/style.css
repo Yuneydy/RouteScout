@@ -628,3 +628,45 @@ form#star_rating {
   margin-top: 20px;
   text-align: center;
 }
+
+
+/* Rankings */
+
+.ranking-container {
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem; /* Spacing between user boxes */
+}
+
+.user-box {
+  width: 300px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background-color: #dae2dc;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-label {
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #699369;
+  border-radius: 5px;
+  padding: 5px 10px;
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+}
+
+.username {
+  margin-top: 15px; /* Add space below the label */
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+}
