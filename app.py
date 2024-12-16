@@ -60,8 +60,6 @@ def login():
                         [username])
         row = curs.fetchone()
         if row is None:
-                # Same response as wrong password,
-                # so no information about what went wrong
                 flash('login incorrect. Try again or join')
                 return redirect( url_for('login'))
         stored = row['hashed']

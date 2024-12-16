@@ -112,7 +112,7 @@ def get_top_routes(conn):
     Returns:
         A list of tuples, where each tuple represents a route is in the top three highest rated routes.
     """
-    sql = '''select routeID, avg(rating) as avg_rating from route_rating group by routeID order by avg_rating desc limit 3;'''
+    sql = '''select routeID, round(avg(rating),1) as avg_rating from route_rating group by routeID order by avg_rating desc limit 3;'''
     curs = dbi.cursor(conn)
     curs.execute(sql)
     rows = curs.fetchall()
@@ -129,8 +129,6 @@ def get_top_routes_info(conn):
     curs.execute(sql2)
     rows2 = curs.fetchall()
     return rows2
-
-
 
 def get_top_users(conn):
     """
