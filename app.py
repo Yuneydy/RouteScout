@@ -203,6 +203,8 @@ def upload_route():
                      routeTcx.save(path)
                      app.logger.info(f'File saved at {path}')
                      flash('Route file uploaded successfully: ' + nameOfFile)
+                     routeTcxPath = f'uploads/{nameOfFile}'
+                     print("here is routeTcxPath: ", routeTcxPath)
                 
 
                uid = session.get('uid')
@@ -213,7 +215,7 @@ def upload_route():
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
                 bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-               curs.execute(query, (routeName, routeDescrip, None, embeddedMap, levelRun, numMile, 
+               curs.execute(query, (routeName, routeDescrip, routeTcxPath, embeddedMap, levelRun, numMile, 
                              None, startTow, None, endTow, outAndBack, bathr, bathDescrip, waterFount, fountDescrip, uid))
                
                #updates profile page, adding one to the number of runs you have created
