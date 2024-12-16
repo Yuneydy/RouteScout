@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Route</title>
+    <title>Share and Upload Your Running Routes</title>
 </head>
 <link rel='stylesheet' href="{{url_for('static', filename = 'updateForm.css')}}">
 <body>
@@ -20,7 +20,9 @@
     
     <p>
         <label for="notes">Route Description, Notes or Tips: </label>
-        <textarea name="notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
+        <textarea name="notes" id = "notes" rows="4" placeholder="Describe notable features, challenges, or other details"></textarea>
+
+        
     </p>
 
     <p>
@@ -77,18 +79,15 @@
     </p>
     
     <p>
-        <label for="location">Location: </label>
-        <input type="text" name="location" id="location" placeholder="e.g., Wellesley" required>
-    </p>
-    
-    <p>
-        <label for="outBack">Was it out and back? </label>
-        <input type="radio" name="outBack" value="yes" id="outBack_yes">
-        <label for="outBack_yes">Yes</label>
+        <fieldset>
+            <legend>Was it out and back?</legend>
+            <input type="radio" name="outBack" value="yes" id="outBack_yes">
+            <label for="outBack_yes">Yes</label>
         
-        <input type="radio" name="outBack" value="no" id="outBack_no">
-        <label for="outBack_no">No</label>
-
+            <input type="radio" name="outBack" value="no" id="outBack_no">
+            <label for="outBack_no">No</label>
+        </fieldset>
+        
     </p>
     
     <p>
@@ -102,13 +101,15 @@
     
     
     <p>
-        <label for="bathrooms">Were there bathrooms along the route? </label>
-        <input type="radio" name="bathrooms" value="yes" id="bathrooms_yes">
-        <label for="bathrooms_yes">Yes</label>
+        <fieldset>
+            <legend>Were there bathrooms along the route?</legend>
+            <input type="radio" name="bathrooms" value="yes" id="bathrooms_yes">
+            <label for="bathrooms_yes">Yes</label>
         
-        <input type="radio" name="bathrooms" value="no" id="bathrooms_no">
-        <label for="bathrooms_no">No</label>
-
+            <input type="radio" name="bathrooms" value="no" id="bathrooms_no">
+            <label for="bathrooms_no">No</label>
+        </fieldset>
+        
     </p>
     
     <p>
@@ -117,12 +118,15 @@
     </p>
     
     <p>
-        <label for="water">Were there water stations along the route? </label>
-        <input type="radio" name="water" value="yes" id="water_yes">
-        <label for="water_yes">Yes</label>
+        <fieldset>
+            <legend>Were there water stations along the route?</legend>
+            <input type="radio" name="water" value="yes" id="water_yes">
+            <label for="water_yes">Yes</label>
         
-        <input type="radio" name="water" value="no" id="water_no">
-        <label for="water_no">No</label>
+            <input type="radio" name="water" value="no" id="water_no">
+            <label for="water_no">No</label>
+        </fieldset>
+        
     </p>
 
     <p>
