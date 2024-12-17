@@ -64,20 +64,20 @@ def get_routes(conn, name, level, mileage, start, finish, out, bath, water):
     """
     Retrieves routes that match specified filters.
     Returns:
-        A list of tuples, where each tuple represents a route that matches the filters.
+        A list of dictionaries, where each dictionary represents a route that matches the filters.
     """
     curs = dbi.cursor(conn)
-    sql = '''select routeID, name, route_description, route_tcx, 
-    embedded_map_link, level, mileage, starting_location, starting_town, finishing_location, 
-    out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy from route_info 
-    where '''
+    sql = '''select routeID, route_info.created_at, name, route_description, route_tcx, 
+    embedded_map_link, route_info.level, mileage, starting_location, starting_town, finishing_location, 
+    out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy, 
+    uid, username, pronouns, user.username from route_info inner join user on route_info.addedBy = user.uid where '''
+    
     filters = []
-    if name != None:
+    if name is not None:
         sql += 'name like %s and '
-        filters.append('%'+ name + '%')
-        print(name)
+        filters.append('%' + name + '%')
     if level != 'Any':
-        sql += 'level like %s and '
+        sql += 'route_info.level like %s and '
         filters.append(level)
     if mileage != 25:
         sql += 'mileage <= %s and '
@@ -97,13 +97,20 @@ def get_routes(conn, name, level, mileage, start, finish, out, bath, water):
     if water != 'n/a':
         sql += 'water_fountain like %s and '
         filters.append(water)
-    print('before:' + sql)
-    sql = sql.removesuffix('and ')
-    print('after:' + sql)
-    curs.execute(sql,filters)
     
-    info = curs.fetchall()
+    # Remove the trailing 'and '
+    sql = sql.rstrip('and ')
+    
+    curs.execute(sql, filters)
+    
+    # Fetch column names from the cursor description to use as dictionary keys
+    columns = [desc[0] for desc in curs.description]
+    print(len(columns))
+    print(columns)
+    # Fetch rows and convert each row into a dictionary
+    info = [dict(zip(columns, row)) for row in curs.fetchall()]
     return info
+
 
 
 def get_top_routes(conn):

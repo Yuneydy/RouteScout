@@ -482,16 +482,16 @@ form#star_rating {
 }
 
 #star_rating input:hover + .star,
-#star_rating input:focus + .star {
+#star_rating input:focus + .star{
   color: #036;
 }
 
-#star_rating input[id="star0"]:checked + .star {
+#star_rating input[id="star0"]:checked + .star{
   color: #ff2d21;
 }
 
 /* Submit button styling */
-#star_rating [type="submit"] {
+#star_rating [type="submit"] .star_rating [type="submit"]{
   float: none;
   display: block;
   margin: 20px auto;
@@ -505,7 +505,7 @@ form#star_rating {
   transition: background-color 0.3s ease;
 }
 
-#star_rating [type="submit"]:hover {
+#star_rating [type="submit"]:hover .star_rating{
   background-color: #024;
 }
 
