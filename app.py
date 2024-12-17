@@ -300,7 +300,7 @@ def profile():
                 newUserName = request.form.get('new-username')
                 newPronouns = request.form.get('new-pronouns')
                 newLevel = request.form.get('new-level')
-                if newLevel != "Beginner" or "Intermediate" or "Advanced":
+                if (newLevel != "Beginner") and (newLevel != "Intermediate") and (newLevel != "Advanced"):
                         flash('Level must be Beginner, Intermediate, or Advanced')
                         return redirect(url_for('profile'))
                 newPaceMin = request.form.get('new-pace-min')
