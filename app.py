@@ -300,10 +300,16 @@ def profile():
                 newUserName = request.form.get('new-username')
                 newPronouns = request.form.get('new-pronouns')
                 newLevel = request.form.get('new-level')
+                if newLevel != "Beginner" or "Intermediate" or "Advanced":
+                        flash('Level must be Beginner, Intermediate, or Advanced')
+                        return redirect(url_for('profile'))
                 newPaceMin = request.form.get('new-pace-min')
                 if len(newPaceMin) == 1:
                      newPaceMin = "0"+newPaceMin
                 newPaceSec = request.form.get('new-pace-sec')
+                if len(newPaceSec) == 1:
+                     flash('Seconds must be 2 numbers!')
+                     return redirect(url_for('profile'))
                 newPace = newPaceMin+newPaceSec
                 updateUserQuery = ''' update user 
                 set username = %s, pronouns = %s, level = %s, average_pace = %s 
