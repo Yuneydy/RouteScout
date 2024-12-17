@@ -9,22 +9,23 @@
     <title>Build Individual Runner Profile Here</title>
 </head>
 
-<h1>Your profile</h1>
+<h1 class="about-title">Your profile</h1>
 
 <div class="profile-info">
-<p>username: {{username}}</p>
-<p>pronouns: {{pronouns}}</p>
-<p>current level: {{level}}</p>
-<p>current overall mileage: {{overallMileage}}</p>
-<p>current averrage pace: {{avgPaceMin}}:{{avgPaceSec}}</p>
-<p>number of routes you have created: {{routesCreated}}</p>
+<img class="profile-photo" src="{{ url_for('static', filename='uploads/' + profilepicturefilename) }}" alt="Profile Picture"> 
+<p class="profile-text">Username: {{username}}</p>
+<p class="profile-text">Pronouns: {{pronouns}}</p>
+<p class="profile-text">Current level: {{level}}</p>
+<p class="profile-text">Current overall mileage: {{overallMileage}}</p>
+<p class="profile-text">Current averrage pace: {{avgPaceMin}}:{{avgPaceSec}}</p>
+<p class="profile-text"number of routes you have created: {{routesCreated}}</p>
 </div>
 
 
-<h2>Update Your Information</h2>
+<h2 class="about-title">Update Your Information</h2>
 
 <div class ="profile-info">
-<form method="POST" action="{{ url_for('profile') }}">
+<form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data">
     <table>
         <tr>
             <td><label for="new-username">Username:</label></td>
@@ -43,6 +44,11 @@
             <td><input  id="new-pace-min" name="new-pace-min" type="text" value="{{ avgPaceMin }}" maxlength="2" class="small-input">
             <span>:</span>
             <input id="new-pace-sec" name="new-pace-sec" type="text" value="{{ avgPaceSec }}" maxlength="2" class="small-input"></td>
+        </tr>
+        <tr>
+            <td><label for="profile-picture">Profile Picture (must be jpeg):</label>
+                <input type="file" id="profilepic" name="profilepic" accept=".jpeg">
+            </td>
         </tr>
     </table>
     <div>
