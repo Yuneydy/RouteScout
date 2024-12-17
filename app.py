@@ -172,7 +172,7 @@ def upload_route():
                #route upload
                routeName = request.form.get("name")
                routeDescrip = request.form.get("notes")
-               routeTcx = request.files.get("route_tcx")
+               routeTcx = request.files.get("route_gpx")
 
 
                if routeTcx:
@@ -209,7 +209,7 @@ def upload_route():
                if uid is None:
                      app.logger.error ('No user with this id')
                curs = dbi.cursor(conn)
-               query = '''INSERT INTO route_info(name, route_description, route_tcx, embedded_map_link, level, mileage, 
+               query = '''INSERT INTO route_info(name, route_description, route_gpx, embedded_map_link, level, mileage, 
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
                 bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
@@ -262,12 +262,17 @@ def profile():
        findUserNamequery = 'SELECT username from userpass where uid=%s'
        curs.execute(findUserNamequery, uid)
        row = curs.fetchone()
-       print(row)
        username = row['username']
        findUserInfoquery = '''select pronouns, level, overall_mileage, average_pace, routes_created from user where uid=%s'''
        curs.execute(findUserInfoquery, uid)
        row = curs.fetchone()
-       print(row)
+       findUserProfilePic = '''select profilepictures.profilefilename from profilepictures inner join user on profilepictures.uid=user.uid where user.uid=%s'''
+       curs.execute(findUserProfilePic, uid)
+       row2 = curs.fetchone()
+       if row2:
+            profilepicturefilename = row2['profilefilename']
+       else:
+            profilepicturefilename = "NoProfilePicture.jpeg"
        pronouns = row['pronouns']
        level = row['level']
        overallMileage = row['overall_mileage']
@@ -285,7 +290,8 @@ def profile():
             overallMileage=overallMileage,
             avgPaceMin=avgPaceMin,
             avgPaceSec=avgPaceSec,
-            routesCreated=routesCreated
+            routesCreated=routesCreated,
+            profilepicturefilename=profilepicturefilename
         )
        
        if request.method == 'POST':
@@ -294,8 +300,16 @@ def profile():
                 newUserName = request.form.get('new-username')
                 newPronouns = request.form.get('new-pronouns')
                 newLevel = request.form.get('new-level')
+                if (newLevel != "Beginner") and (newLevel != "Intermediate") and (newLevel != "Advanced"):
+                        flash('Level must be Beginner, Intermediate, or Advanced')
+                        return redirect(url_for('profile'))
                 newPaceMin = request.form.get('new-pace-min')
+                if len(newPaceMin) == 1:
+                     newPaceMin = "0"+newPaceMin
                 newPaceSec = request.form.get('new-pace-sec')
+                if len(newPaceSec) == 1:
+                     flash('Seconds must be 2 numbers!')
+                     return redirect(url_for('profile'))
                 newPace = newPaceMin+newPaceSec
                 updateUserQuery = ''' update user 
                 set username = %s, pronouns = %s, level = %s, average_pace = %s 
@@ -306,6 +320,24 @@ def profile():
                 updateUserPassQuery = 'update userpass set username = %s where uid = %s'
                 curs.execute(updateUserPassQuery, (newUserName, uid))
                 conn.commit()
+                try:
+                   newprofile = request.files['profilepic'] 
+                   if newprofile:
+                        user_filename = newprofile.filename
+                        ext = user_filename.split('.')[-1]
+                        filename = secure_filename('{}.{}'.format(uid,ext))
+                        pathname = os.path.join(app.config['UPLOAD_FOLDER'],filename)
+                        newprofile.save(pathname)
+                        curs.execute(
+                                '''insert into profilepictures(uid, profilefilename) values (%s,%s)
+                                on duplicate key update profilefilename = %s''',
+                                [uid, filename, filename])
+                        conn.commit()
+                        flash('Upload successful')
+                except Exception as err:
+                   flash('Upload failed {why}'.format(why=err))
+                   return redirect(url_for('profile'))
+                
                 flash('Profile updated successfully')
                 return redirect(url_for('profile'))
              else:

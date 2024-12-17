@@ -9,7 +9,7 @@ def get_all_routes(conn):
     """
     curs = dbi.dict_cursor(conn)
     sql = '''select routeID, route_info.created_at, name, route_description, route_tcx, 
-    embedded_map_link, route_info.level, mileage, starting_location, starting_town, finishing_location, 
+    embedded_map_link, route_info.level, mileage, starting_location, starting_town, finishing_town, 
     out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy, 
     uid, username, pronouns, user.level, overall_mileage, average_pace, routes_created,
     user.username from route_info inner join user on route_info.addedBy = user.uid'''
@@ -52,7 +52,7 @@ def get_user_routes(conn, user_id):
     """
     curs = dbi.dict_cursor(conn)
     sql = '''select routeID, name, route_info.created_at, route_description, route_tcx, 
-    embedded_map_link, route_info.level, mileage, starting_location, starting_town, finishing_location, 
+    embedded_map_link, route_info.level, mileage, starting_location, starting_town, finishing_town, 
     out_and_back, bathroom, bathroom_description, water_fountain, fountain_description, addedBy, 
     uid, username, pronouns, user.level, overall_mileage, average_pace, routes_created,
     user.username from route_info inner join user on route_info.addedBy = user.uid where addedBy = %s'''
