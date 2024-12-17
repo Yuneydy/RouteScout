@@ -172,7 +172,7 @@ def upload_route():
                #route upload
                routeName = request.form.get("name")
                routeDescrip = request.form.get("notes")
-               routeTcx = request.files.get("route_tcx")
+               routeTcx = request.files.get("route_gpx")
 
 
                if routeTcx:
@@ -209,7 +209,7 @@ def upload_route():
                if uid is None:
                      app.logger.error ('No user with this id')
                curs = dbi.cursor(conn)
-               query = '''INSERT INTO route_info(name, route_description, route_tcx, embedded_map_link, level, mileage, 
+               query = '''INSERT INTO route_info(name, route_description, route_gpx, embedded_map_link, level, mileage, 
                 starting_location, starting_town, finishing_location, finishing_town, out_and_back, 
                 bathroom, bathroom_description, water_fountain, fountain_description, addedBy) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
