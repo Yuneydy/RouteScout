@@ -24,60 +24,6 @@
     <span class="close-btn" onclick="toggleFilter()">&times;</span>
 
     <form id="search-filters" method="post" action="{{ url_for('search_route') }}">     
-        <script>
-            function updateMileageValue(value) {
-                document.getElementById('mileageValue').textContent = value;
-            }
-            function toggleFilter() {
-                var sidebar = document.getElementById("filterSidebar");
-                var overlay = document.getElementById("overlay");
-
-                if (sidebar.classList.contains("open")) {
-                    sidebar.classList.remove("open");
-                    overlay.style.display = "none";  // Hide overlay when closing
-                } else {
-                    sidebar.classList.add("open");
-                    overlay.style.display = "block"; // Show overlay when opening
-                }
-            }
-            // Function to open a modal
-            function openModal(id) {
-                document.getElementById(id).style.display = "block";
-            }
-
-            // Function to close a modal
-            function closeModal(id) {
-                document.getElementById(id).style.display = "none";
-            }
-
-            // Close modal when clicking outside of it
-            window.onclick = function (event) {
-                const modals = document.getElementsByClassName('route-modal');
-                Array.from(modals).forEach(modal => {
-                    if (event.target === modal) {
-                        modal.style.display = "none";
-            }
-            })};
-
-            var radios = document.querySelectorAll('#star_rating input[type=radio]');
-            var output = document.querySelector('#star_rating output');
-
-            // Iterate through all radio buttons and add a click
-            // event listener to the labels
-            Array.prototype.forEach.call(radios, function(el, i){
-                var label = el.nextSibling.nextSibling;
-                label.addEventListener("click", function(event){
-                    do_something(label.querySelector('span').textContent);
-                });
-            });
-
-            // If the form gets submitted, do_something
-            document.querySelector('#star_rating').addEventListener('submit', function(event){
-                do_something(document.querySelector('#star_rating :checked ~ label span').textContent);
-                event.preventDefault();
-                event.stopImmediatePropagation();
-            });
-    </script>
        
         <!-- Filter Section -->
         <div class="filter-section">
@@ -189,7 +135,7 @@
                 <iframe alt="No map was uploaded for this route." src="{{route['embedded_map_link']}}"></iframe>
               </div>
             {% if route['route_tcx'] and 'uploads/' in route['route_tcx'] %}
-              <a href="{{ url_for('static', filename=route['route_tcx']) }}" download>Download GPX</a>
+              <a class='route-link' href="{{ url_for('static', filename=route['route_tcx']) }}" download>Download GPX</a>
             {% else %}
                 <p>No downloadable route available</p>
             {% endif %}
@@ -215,61 +161,38 @@
                 {% endfor %}
             </ul>
             
-            <form id="star_rating" class="star_rating">
-                
-                <p> Rate this route: </p>
-                <input value="0" id="star0" checked
-                   type="radio" name="rating" class="visuallyhidden">
-                   <label class="star" for="star0">
-                       <span class="visuallyhidden"></span>
-                       <svg viewBox="0 0 512 512">
-                           <g stroke-width="70" stroke-linecap="square">
-                               <path d="M91.5,442.5 L409.366489,124.633512"></path>
-                               <path d="M90.9861965,124.986197 L409.184248,443.184248"></path>
-                           </g>
-                       </svg>
-                   </label>
-               
-                   <input value="1" id="star1"
-                       type="radio" name="rating" class="visuallyhidden">
-                   <label class="star" for="star1">
-                       <span class="visuallyhidden"></span>
-                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
-                   </label>
-               
-                   <input value="2" id="star2"
-                       type="radio" name="rating" class="visuallyhidden">
-                   <label class="star" for="star2">
-                       <span class="visuallyhidden"></span>
-                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
-                   </label>
-               
-                   <input value="3" id="star3"
-                       type="radio" name="rating" class="visuallyhidden">
-                   <label class="star" for="star3">
-                       <span class="visuallyhidden"></span>
-                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
-                   </label>
-               
-                   <input value="4" id="star4"
-                       type="radio" name="rating" class="visuallyhidden">
-                   <label class="star" for="star4">
-                       <span class="visuallyhidden"></span>
-                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
-                   </label>
-               
-                   <input value="5" id="star5"
-                       type="radio" name="rating" class="visuallyhidden">
-                   <label class="star" for="star5">
-                       <span class="visuallyhidden"></span>
-                       <svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg>
-                   </label>
-                   <br></br>
-                   <p id="com">
-                    <label for="comment">Do you have any comments about the route you ran?</label>
-                </p>
-                <textarea id="comment" name="comment" rows="5" cols="40" placeholder="Share your thoughts about this route..."></textarea>
-                <button type="submit" class="btn-small focusable">Submit rating</button>
+            <!-- The form for each route rating -->
+<form id="star_rating_{{route['routeID']}}" class="star_rating" method="POST" action="{{ url_for('submit_rating') }}">
+    <!-- Hidden route ID -->
+    <input type="hidden" name="route_ID" value="{{ route['routeID'] }}">
+
+    <div class="star-rating">
+        <!-- Rating Stars -->
+        <input value="0" id="star0_{{route['routeID']}}" type="radio" name="rating" class="visuallyhidden" checked>
+        <label for="star0_{{route['routeID']}}"><svg viewBox="0 0 512 512"><g stroke-width="70" stroke-linecap="square"><path d="M91.5,442.5 L409.366489,124.633512"></path><path d="M90.9861965,124.986197 L409.184248,443.184248"></path></g></svg><span style="display:none;">0</span></label>
+
+        <input value="1" id="star1_{{route['routeID']}}" type="radio" name="rating" class="visuallyhidden">
+        <label for="star1_{{route['routeID']}}"><svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg><span style="display:none;">1</span></label>
+
+        <input value="2" id="star2_{{route['routeID']}}" type="radio" name="rating" class="visuallyhidden">
+        <label for="star2_{{route['routeID']}}"><svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg><span style="display:none;">2</span></label>
+
+        <input value="3" id="star3_{{route['routeID']}}" type="radio" name="rating" class="visuallyhidden">
+        <label for="star3_{{route['routeID']}}"><svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg><span style="display:none;">3</span></label>
+
+        <input value="4" id="star4_{{route['routeID']}}" type="radio" name="rating" class="visuallyhidden">
+        <label for="star4_{{route['routeID']}}"><svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg><span style="display:none;">4</span></label>
+
+        <input value="5" id="star5_{{route['routeID']}}" type="radio" name="rating" class="visuallyhidden">
+        <label for="star5_{{route['routeID']}}"><svg viewBox="0 0 512 512"><path d="M512 198.525l-176.89-25.704-79.11-160.291-79.108 160.291-176.892 25.704 128 124.769-30.216 176.176 158.216-83.179 158.216 83.179-30.217-176.176 128.001-124.769z"></path></svg><span style="display:none;">5</span></label>
+    </div>
+    <output></output>
+    <!-- Comment section -->
+    <textarea id="comment_{{route['routeID']}}" name="comment" rows="5" cols="40" placeholder="Share your thoughts about this route..."></textarea>
+
+    <button type="submit" class="btn-small focusable">Submit Rating</button>
+</form>
+
 
             <p><b>Overall Rating:</b></p>
             <ul>
@@ -283,6 +206,60 @@
     </div>
     {% endfor %}
 </div>
+<script>
+    function updateMileageValue(value) {
+        document.getElementById('mileageValue').textContent = value;
+    }
+    function toggleFilter() {
+        var sidebar = document.getElementById("filterSidebar");
+        var overlay = document.getElementById("overlay");
 
+        if (sidebar.classList.contains("open")) {
+            sidebar.classList.remove("open");
+            overlay.style.display = "none";  // Hide overlay when closing
+        } else {
+            sidebar.classList.add("open");
+            overlay.style.display = "block"; // Show overlay when opening
+        }
+    }
+    // Function to open a modal
+    function openModal(id) {
+        document.getElementById(id).style.display = "block";
+    }
+
+    // Function to close a modal
+    function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function (event) {
+        const modals = document.getElementsByClassName('route-modal');
+        Array.from(modals).forEach(modal => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+    }
+    })};
+
+            var radios = document.querySelectorAll('#star_rating input[type=radio]');
+            var output = document.querySelector('#star_rating output');
+
+            // Iterate through all radio buttons and add a click
+            // event listener to the labels
+            Array.prototype.forEach.call(radios, function(el, i){
+                var label = el.nextSibling.nextSibling;
+                label.addEventListener("click", function(event){
+                    do_something(label.querySelector('span').textContent);
+                });
+            });
+
+            // If the form gets submitted, do_something
+            document.querySelector('#star_rating').addEventListener('submit', function(event){
+                do_something(document.querySelector('#star_rating :checked ~ label span').textContent);
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            });
+
+</script>
 
 {% endblock %}

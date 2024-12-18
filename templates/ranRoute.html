@@ -1,10 +1,7 @@
-{% extends "base.html" %}
-
-{% block main_content %}
 
 <h1>Route Rating Form:</h1>
 
-<form method="post" action="{{url_for('ranRoute')}}">
+<form method="post" action="{{url_for('searchRoute')}}">
     <p><label>What Route Number did you run?:
         <input required type="text" name="route_ID">
     </label>
@@ -24,6 +21,3 @@
     <input type="text" id="comment" name="comment" rows="5" cols="190"></input>
     <p><input type="submit"></p>
 </form>
-
-
-{% endblock %}

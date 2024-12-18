@@ -396,68 +396,63 @@ def ranking():
 
 # Allows users to say which routes they have completed and give them a rating
 # and a comment
-@app.route('/routeSearch/', methods=["GET", "POST"])
-def ranRoute():
+@app.route('/submit_rating/', methods=["POST"])
+def submit_rating():
     uid = session.get('uid')
     if uid is None:
         return redirect(url_for('intro'))
-    
-    if request.method == "GET":
-        return render_template('routeSearch.html')
-    else:
-        # Get info from the form
-        routeNum = request.form.get('route_ID')  # Assuming a hidden or separate input for route_ID
-        routeRating = request.form.get('rating') 
-        routeComment = request.form.get('comment')
 
-        # Ensure valid inputs
-        if not routeNum or not routeRating:
-            flash('Route number and rating are required.')
-            return redirect(url_for('ranRoute'))
+    # Get the form data: route ID, rating, and optional comment
+    routeID = request.form.get('route_ID')
+    rating = request.form.get('rating')
+    comment = request.form.get('comment')
 
-        try:
-            # Convert to integers where applicable
-            num = int(routeNum)
-            rating = int(routeRating)
-        except ValueError:
-            flash('Invalid data provided for route number or rating.')
-            return redirect(url_for('ranRoute'))
+    # Validate the inputs
+    if not routeID or not rating:
+        flash('Route ID and rating are required.')
+        return redirect(url_for('search_route'))
 
-        conn = dbi.connect()
-        curs = dbi.cursor(conn)
+    try:
+        routeID = int(routeID)
+        rating = int(rating)
+    except ValueError:
+        flash('Invalid route ID or rating.')
+        return redirect(url_for('search_route'))
 
-        # Insert into route_rating table
-        query_rating = 'INSERT INTO route_rating(uid, routeID, rating, comment) VALUES (%s, %s, %s, %s)'
-        curs.execute(query_rating, (uid, num, rating, routeComment))
+    # Connect to the database
+    conn = dbi.connect()
+    with conn.cursor() as curs:
+        # Insert the rating and comment into the route_rating table
+        query_rating = '''
+            INSERT INTO route_rating (uid, routeID, rating, comment) 
+            VALUES (%s, %s, %s, %s)
+        '''
+        curs.execute(query_rating, (uid, routeID, rating, comment))
 
-        # Find mileage of the run
+        # Optionally update user mileage (if necessary)
         query_findMileage = 'SELECT mileage FROM route_info WHERE routeID = %s'
-        curs.execute(query_findMileage, (num,))
+        curs.execute(query_findMileage, (routeID,))
         row = curs.fetchone()
-        if row is None:
-            flash('Route not found in database.')
-            return redirect(url_for('ranRoute'))
-        
-        routeMileage = row[0]
+        if row:
+            routeMileage = row[0]
 
-        # Get the user's current mileage
-        query_currentMileage = 'SELECT overall_mileage FROM user WHERE uid = %s'
-        curs.execute(query_currentMileage, (uid))
-        row1 = curs.fetchone()
-        if row1 is None:
-            flash('User information not found.')
-            return redirect(url_for('ranRoute'))
-        
-        currentM = float(row1[0])
-        newMileage = currentM + routeMileage
+            # Get the user's current mileage
+            query_currentMileage = 'SELECT overall_mileage FROM user WHERE uid = %s'
+            curs.execute(query_currentMileage, (uid,))
+            row1 = curs.fetchone()
+            if row1:
+                currentM = float(row1[0])
+                newMileage = currentM + routeMileage
 
-        # Update user's overall mileage
-        query_newMileage = 'UPDATE user SET overall_mileage = %s WHERE uid = %s'
-        curs.execute(query_newMileage, (newMileage, uid))
+                # Update the user's total mileage
+                query_newMileage = 'UPDATE user SET overall_mileage = %s WHERE uid = %s'
+                curs.execute(query_newMileage, (newMileage, uid))
+
         conn.commit()
 
-        flash('Your route review has been submitted, and your overall mileage has been updated! Thank you!')
-        return redirect(url_for('routeSearch'))
+    flash('Your rating and comment have been submitted. Thank you!')
+    return redirect(url_for('search_route'))  # Redirect back to the route search page
+
 
 if __name__ == '__main__':
     import sys, os
