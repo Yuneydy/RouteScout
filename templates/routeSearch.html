@@ -27,7 +27,7 @@
        
         <!-- Filter Section -->
         <div class="filter-section">
-            <label>Route Name:</label>
+            <label for="name">Route Name:</label>
             <input type="text" id="name" name="name" placeholder="Enter route name">
         </div>
 
@@ -42,9 +42,9 @@
         </div>
 
         <div class="filter-section">
-            <label>Maximum Mileage:</label>
+            <label for="mileage">Maximum Mileage:</label>
             <input type="range" id="mileage" name="mileage" min="0" max="25" value="25" oninput="updateMileageValue(this.value)">
-            <span id="mileageValue">25</span> miles
+            <p><span id="mileageValue">25</span> miles</p>
         </div>
 
         <div class="filter-section">
@@ -139,27 +139,31 @@
             {% else %}
                 <p>No downloadable route available</p>
             {% endif %}
-            <p><b>Route ID:</b> {{route["routeID"]}}</p>
-            <p><b>Uploaded By:</b> {{route["username"]}}</p>
-            <p><b>Date/Time:</b> {{route["created_at"]}}</p>
-            <p><b>Description:</b> {{route["route_description"]}}</p>
-            <p><b>Level:</b> {{route["level"]}}</p>
-            <p><b>Miles:</b> {{route["mileage"]}}</p>
-            <p><b>Start:</b> {{route["starting_town"]}}</p>
-            <p><b>End:</b> {{route["finishing_town"]}}</p>
-            <p><b>Out N Back?</b> {{route["out_and_back"]}}</p>
-            <p><b>Bathroom?</b> {{route["bathroom"]}}</p>
-            <p><b>Where?</b> {{route["bathroom_description"]}}</p>
-            <p><b>Water Fountain?</b> {{route["water_fountain"]}}</p>
-            <p><b>Where?</b> {{route["fountain_description"]}}</p>
-            <p><b>Ratings:</b></p>
-            <ul>
-                {% for rating in ratings %}
+            <div id="route-details-container">
+                <p><b>Route ID:</b> {{ route["routeID"] }}</p>
+                <p><b>Uploaded By:</b> {{ route["username"] }}</p>
+                <p><b>Date/Time:</b> {{ route["created_at"] }}</p>
+                <p><b>Description:</b> {{ route["route_description"] }}</p>
+                <p><b>Level:</b> {{ route["level"] }}</p>
+                <p><b>Miles:</b> {{ route["mileage"] }}</p>
+                <p><b>Start:</b> {{ route["starting_town"] }}</p>
+                <p><b>End:</b> {{ route["finishing_town"] }}</p>
+                <p><b>Out N Back?</b> {{ route["out_and_back"] }}</p>
+                <p><b>Bathroom?</b> {{ route["bathroom"] }}</p>
+                <p><b>Where?</b> {{ route["bathroom_description"] }}</p>
+                <p><b>Water Fountain?</b> {{ route["water_fountain"] }}</p>
+                <p><b>Where?</b> {{ route["fountain_description"] }}</p>
+              
+                <h3>Ratings:</h3>
+                <ul>
+                  {% for rating in ratings %}
                     {% if rating[2] == route["routeID"] %}
-                    <li>Rating: {{ rating[3] }} | Comment: {{ rating[4] }}</li>
+                    <li>Rating: <span class="rating-number">{{ rating[3] }}</span> | {{ rating[4] }}</li>
                     {% endif %}
-                {% endfor %}
-            </ul>
+                  {% endfor %}
+                </ul>
+              </div>
+              
             
             <!-- The form for each route rating -->
 <form id="star_rating_{{route['routeID']}}" class="star_rating" method="POST" action="{{ url_for('submit_rating') }}">
@@ -188,20 +192,24 @@
     </div>
     <output></output>
     <!-- Comment section -->
+     <label style="font-weight: 500; margin-top: 10px;" for="comment_{{route['routeID']}}">Share your thoughts about this route!</label>
     <textarea id="comment_{{route['routeID']}}" name="comment" rows="5" cols="40" placeholder="Share your thoughts about this route..."></textarea>
 
     <button type="submit" class="btn-small focusable">Submit Rating</button>
 </form>
 
 
-            <p><b>Overall Rating:</b></p>
+        <div id="overall-rating-container">
+            <h3>Overall Rating:</h3>
             <ul>
-                {% for avgRating in avg_ratings %}
-                    {% if avgRating[0] == route["routeID"] %}
-                    <li>Overall rating: {{ avgRating[1] }}/5</li>
-                    {% endif %}
-                {% endfor %}
+            {% for avgRating in avg_ratings %}
+                {% if avgRating[0] == route["routeID"] %}
+                <li>Overall rating: <span class="rating-number">{{ avgRating[1] }}/5</span></li>
+                {% endif %}
+            {% endfor %}
             </ul>
+        </div>
+  
         </div>
     </div>
     {% endfor %}
